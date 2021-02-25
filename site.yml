@@ -2,32 +2,34 @@ runtime:
   cache_dir: ./.cache/antora
 
 site:
-  title: Template Tutorial
-  url: https://redhat-scholars.github.io/course-template
-  start_page: template-tutorial::index.adoc
+  title: Ansible Operator Road Trip Guide
+  url: https://atarazana.github.io/ansible-operator-road-trip-guide
+  start_page: ansible-operator-road-trip-guide::index.adoc
 
 content:
   sources:
-    - url: ./
+    - url: git@github.com:atarazana/ansible-operator-road-trip-guide.git
+      tags: []
+      branches: [master]
       start_path: documentation
 
 asciidoc:
   attributes:
     release-version: master
     page-pagination: true
+    #title: Ansible Operator Road Trip Guide
+    git_base: https://github.com/atarazana 
+    git_uri: ansible-operator-road-trip-guide
+    git_ref: master
   extensions:
     - ./lib/tab-block.js
     - ./lib/remote-include-processor.js
 
 ui:
   bundle:
-    url: https://github.com/redhat-scholars/course-ui/releases/download/v0.1.0/ui-bundle.zip
+    url: https://github.com/redhat-scholars/course-ui/releases/download/v0.1.8/ui-bundle.zip
     snapshot: true
-  supplemental_files:
-    - path: ./supplemental-ui
-    - path: .nojekyll
-    - path: ui.yml
-      contents: "static_files: [ .nojekyll ]"
+  supplemental_files: ./supplemental-ui
 
 output:
   dir: ./gh-pages

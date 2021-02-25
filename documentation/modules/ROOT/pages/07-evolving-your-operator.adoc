@@ -1,0 +1,570 @@
+include::_attributes.adoc[]
+= Evolving your operator
+
+Imagine it took you a couple of weeks and now you’ve decided to improve your operator by injecting a link:https://kubernetes.io/blog/2015/06/the-distributed-system-toolkit-patterns/#example-1-sidecar-containers[sidecar] container that exposes Memcached server metrics to Prometheus on port `9150`.
+
+We’re going to use link:https://github.com/prometheus/memcached_exporter[this] Promtheus exporter. Let’s get started.
+
+[#updating-the-code]
+== Updating code to inject the Prometheus Exporter
+
+Before we actually change the code let’s update the versioning environment variables in `./settings.sh`
+
+We’re moving from:
+
+[source,bash,subs="attributes+"]
+----
+export VERSION=0.0.1
+----
+
+to:
+
+NOTE: We need `FROM_VERSION` because we differentiate from the 1st version and the rest to add new bundle images instead to the previous index instead of create a new bundle index.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+export FROM_VERSION=0.0.1
+export VERSION=0.0.2
+----
+
+CAUTION: Don’t forget to save `./settings.sh`!
+
+Now, open file `./controllers/{crd_name_lc}_controller.go` and find `Check if the deployment already exists, if not create a new one' it should around line 66. Until now the current code checks if the Deployment is already created and if not it creates it. We want to go a step further, if the deployment already exists then patch it (and add the sidecar container) if not create the deployment (also with the sidecar, although we do this later on, be patient)
+
+We’re moving from:
+
+[source,yaml]
+----
+          spec:
+            containers:
+            - name: memcached
+              command:
+              - memcached
+              - -m=64
+              - -o
+              - modern
+              - -v
+              image: "docker.io/memcached:1.4.36-alpine"
+              ports:
+                - containerPort: 11211
+                  name: memcached
+----
+
+to:
+
+[source,yaml]
+----
+          spec:
+            containers:
+            - name: memcached
+              command:
+              - memcached
+              - -m=64
+              - -o
+              - modern
+              - -v
+              image: "docker.io/memcached:1.4.36-alpine"
+              ports:
+                - containerPort: 11211
+                  name: memcached
+            - name: exporter
+              image: "quay.io/prometheus/memcached-exporter:v0.7.0"
+              ports:
+                - containerPort: 9150
+                  name: exporter
+----
+
+Please open `./roles/{crd_name_lc}/tasks/main.yml` and substitute the content with this:
+
+[.console-input]
+[source,yaml,subs="attributes+"]
+----
+include::example${crd_name_lc}-role-main-task-v0.0.2.yaml[]
+----
+
+[#testing-the-new-code]
+== Testing the new code
+
+Before we actually do so, let’s have another look to the standing status of our deployment.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod -n operator-tests
+----
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME                                                      READY   STATUS    RESTARTS   AGE
+{crd_name_lc}-sample-bf69d6cdf-rk4v5                         1/1     Running   1          2d20h
+{crd_name_lc}-sample-bf69d6cdf-znj4w                         1/1     Running   1          2d20h
+{app_name}-operator-controller-manager-589d887cf7-whpt6   2/2     Running   4          2d20h
+----
+
+As you can see currently *there’s just one container per {crd_name_lc} pod*.
+
+Ok, time for testing. As we did before, you can run your code locally and see the result… but to avoid disturbances of the operator already running, let’s scale down the operator to `zero` replicas.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl scale deploy {app_name}-operator-controller-manager  --replicas=0 -n operator-tests
+----
+
+And check the operator pod is gone.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod -n operator-tests
+----
+
+Now we have to run our operator code locally as we did before.
+
+[IMPORTANT]
+========
+Remember the `Deployment` object our operator created is already there, so our code should be patching it not replacing.
+========
+
+Let's do run our new code locally.
+
+//TIP: Run this command in a different terminal to see changes live => `watch kubectl get pod -n operator-tests` 
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make install run
+----
+
+Now, if you check pods again, you see 2/2 instead of 1/1.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod -n operator-tests
+----
+
+This is the expected result.
+
+IMPORTANT: *Please copy the name of one of the pods.*
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME                                 READY   STATUS    RESTARTS   AGE
+{crd_name_lc}-sample-6d88cb67b6-7nz6j   2/2     Running   0          9m44s
+{crd_name_lc}-sample-6d88cb67b6-rgvfb   2/2     Running   0          9m37s
+----
+
+Let’s check the exporter is working.
+
+[source,bash,subs="attributes+"]
+----
+POD_NAME=<POD_NAME>
+kubectl exec -n operator-tests -it $POD_NAME -c exporter -- wget -q -O- http://localhost:9150/metrics
+----
+
+This is an example out from the exporter.
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+...
+# HELP promhttp_metric_handler_requests_in_flight Current number of scrapes being served.
+# TYPE promhttp_metric_handler_requests_in_flight gauge
+promhttp_metric_handler_requests_in_flight 1
+# HELP promhttp_metric_handler_requests_total Total number of scrapes by HTTP status code.
+# TYPE promhttp_metric_handler_requests_total counter
+promhttp_metric_handler_requests_total{code="200"} 7
+promhttp_metric_handler_requests_total{code="500"} 0
+promhttp_metric_handler_requests_total{code="503"} 0
+----
+
+Ok we're done with the manual tests, kbd:[Ctrl+C] to stop the local process.
+
+Nice! Our code works locally, let's move on.
+
+[#running-as-normal-deployment]
+== Running v0.0.2 as a normal deployment
+
+[WARNING]
+========
+. Check that `VERSION` and `FROM_VERSION` are correct.
+. Don’t forget to reload environment in any terminal you're using for this lab.
+========
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+. ./settings.sh
+----
+
+As we did before after running the code locally we have to build the operator image and run it from the operator deployment.
+
+Let’s build the operator image:
+
+NOTE: I hope you see something like this `Successfully tagged quay.io/{reg_username}/{app_name}-operator-image:v0.0.2` at the end of `make docker--build` otherwise maybe you didn’t notice the *TIP* ;-)
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make docker-build
+----
+
+Let’s push the image…
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+ make docker-push
+----
+
+Make sure you’re not running the operator code locally and uninstall the operator and delete the sample `{crd_name}`
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl delete -n operator-tests -f ./config/samples/{app_name}_v1_{crd_name_lc}.yaml 
+kubectl operator uninstall {app_name}-operator -n operator-tests
+----
+
+Let’s deploy the operator as we did with version `0.0.1`
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make deploy
+----
+
+Let’s check image is version `0.0.2`:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get deploy {app_name}-operator-controller-manager -o jsonpath='{.spec.template.spec.containers[0].image}' -n $PROJECT_NAME && echo
+----
+
+Now let’s create a sample `{crd_name}`:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl apply -n $PROJECT_NAME -f ./config/samples/{app_name}_v1_{crd_name_lc}.yaml 
+----
+
+If it all went right there should be 2 pods with 2 containers plus the pod operator:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod -n $PROJECT_NAME 
+----
+
+Expected result:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME                                                   READY   STATUS    RESTARTS   AGE
+{crd_name_lc}-sample-6d88cb67b6-gv62q                  2/2     Running   0          28s
+{crd_name_lc}-sample-6d88cb67b6-jhspm                  2/2     Running   0          28s
+{app_name}-operator-controller-manager-6fdbfb88d8-8v994   2/2     Running   0          12m
+----
+
+Again if we run the next commands (don’t forget to replace the name of the pod with your own):
+
+[source,bash,subs="attributes+"]
+----
+POD_NAME=<POD_NAME>
+kubectl exec -n $PROJECT_NAME -it $POD_NAME -c exporter -- wget -q -O- http://localhost:9150/metrics
+----
+
+As before, here you are a sample output from the metrics exporter.
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+...
+# HELP promhttp_metric_handler_requests_in_flight Current number of scrapes being served.
+# TYPE promhttp_metric_handler_requests_in_flight gauge
+promhttp_metric_handler_requests_in_flight 1
+# HELP promhttp_metric_handler_requests_total Total number of scrapes by HTTP status code.
+# TYPE promhttp_metric_handler_requests_total counter
+promhttp_metric_handler_requests_total{code="200"} 0
+promhttp_metric_handler_requests_total{code="500"} 0
+promhttp_metric_handler_requests_total{code="503"} 0
+----
+
+Great! now we know our new code works, next stop, create the bundle for the current version (`0.0.2`).
+
+[#create-new-bundle]
+== Create a new operator bundle and it’s corresponding image for version `0.0.2`
+
+This should be easy… just run the following to regenerate the bundle for the new version… wait, wait, I forgot something crucial here… Version `0.0.2` replaces `0.0.1` this should be specified somewhere… specifically in the base CSV. *Let’s do this first!*
+
+Open file `./config/manifests/bases/{operator_name}.clusterserviceversion.yaml`, and add 
+
+`replaces: {operator_name}.v0.0.1`
+
+right underneath 
+
+`version: 0.0.0`
+ 
+*pay attention to indentation*. The end result should look like this:
+
+[source,yaml,subs="attributes+"]
+----
+...
+spec:
+  ...
+  provider:
+    name: {organization_display}
+    url: {organization_link}
+  version: 0.0.0
+  replaces: {app_name}-operator.v0.0.1
+----
+
+Now you can run:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make bundle
+----
+
+Check that next command returns `{operator_name}.v0.0.1`
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+grep replaces ./bundle/manifests/{app_name}-operator.clusterserviceversion.yaml
+----
+
+Also that this returns `name: {operator_name}.v0.0.2`
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+grep "name: {operator_name}.v0.0.2" ./bundle/manifests/{app_name}-operator.clusterserviceversion.yaml
+----
+
+Well now we have to build and push the bundle image:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make bundle-build
+make bundle-push
+----
+
+[#create-and-push-new-bundle-index]
+== Create and push the new Bundle Index (`0.0.2`)
+
+As we advanced before we use `FROM_VERSION` so that we can understand of we have to create a new Index from scratch or start from a previous bundle index to create the new one. Because `FROM_VERSION` is defined the makefile target will create index `0.0.2` based on (from) `0.0.1`
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make index-build
+----
+
+You should see an output similar to this:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+echo "FROM_VERSION 0.0.1"
+FROM_VERSION 0.0.1
+opm -u docker index add --bundles quay.io/{reg_username}/{app_name}-operator-bundle:v0.0.2 --from-index quay.io/{reg_username}/{app_name}-operator-index:v0.0.1 --tag quay.io/{reg_username}/{app_name}-operator-index:v0.0.2
+...
+INFO[0004] Generating dockerfile                         bundles="[quay.io/{reg_username}/{app_name}-operator-bundle:v0.0.2]"
+INFO[0004] writing dockerfile: index.Dockerfile895643308  bundles="[quay.io/{reg_username}/{app_name}-operator-bundle:v0.0.2]"
+INFO[0004] running docker build                          bundles="[quay.io/{reg_username}/{app_name}-operator-bundle:v0.0.2]"
+INFO[0004] [docker build -f index.Dockerfile895643308 -t quay.io/{reg_username}/{app_name}-operator-index:v0.0.2 .]  bundles="[quay.io/{reg_username}/{app_name}-operator-bundle:v0.0.2]"
+----
+
+Let’s push our new index:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make index-push
+----
+
+[#update-catalog-source]
+== Update the CatalogSource to point to the new Bundle Index
+
+Let’s do some cleaning before we test our new bundle index.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make undeploy
+----
+
+//Now let’s deploy the previous version of the CatalogSource, the one pointing to the previous version of the bundle index. This means we’ll be using `FROM_VERSION` ;-)
+
+//[.console-input]
+//[source,bash,subs="attributes+"]
+//----
+//make catalog-deploy-prev
+//----
+
+Let’s check if the operator is available to be installed.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl operator list-available $\{OPERATOR_NAME}
+----
+
+Pay attention, `LATEST CSV` is the previous version.
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME                 CATALOG              CHANNEL  LATEST CSV                  AGE
+{app_name}-operator  Atarazana Operators  alpha    {app_name}-operator.v0.0.1  63s
+----
+
+Let’s install the operator in our test namespace.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl operator install $\{OPERATOR_NAME} -n operator-tests
+----
+
+Now let’s create an {crd_name} object.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl apply -f ./config/samples/{app_name}_v1_{crd_name_lc}.yaml -n operator-tests
+----
+
+Let's see if our operator is working. Remember is version `0.0.1`.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod -n operator-tests
+----
+Ok, as expected 2 pods because size is 2 and 1 container per pod because it’s version `0.0.1`.
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME                                                      READY   STATUS    RESTARTS   AGE
+{crd_name_lc}-sample-bf69d6cdf-7m2bd                         1/1     Running   0          23s
+{crd_name_lc}-sample-bf69d6cdf-rtcpn                         1/1     Running   0          22s
+{app_name}-operator-controller-manager-589d887cf7-6wrw6   2/2     Running   0          77s
+----
+
+Now the moment of truth. Let’s update the `CatalogSource` to point to the new bundle index.
+
+[.console-intput]
+[source,bash,subs="attributes+"]
+----
+kubectl edit catalogsource/atarazana-catalog -n olm
+----
+
+Edit `spec->image` to point to version `0.0.2`: `...-operator-index:v0.0.2`, as in the next excerpt.
+
+IMPORTANT: Don't forget to save your changes! kbd:[Esc+:+wq]
+
+[source,bash,subs="attributes+"]
+----
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  ...
+  name: atarazana-catalog
+  namespace: olm
+spec:
+  displayName: Atarazana Operators
+  image: quay.io/cvicens/{operator_name}-operator-index:v0.0.2
+  publisher: Atarazana Inc.
+  sourceType: grpc
+----
+
+//[.console-input]
+//[source,bash,subs="attributes+"]
+//----
+//make catalog-deploy
+//----
+
+Wait 5 secs or so and list the operators and you’ll see that there’s a new version (CURRENT CSV) and the status is `UpgradePending`.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl operator list 
+----
+
+[NOTE]
+========
+Pay attention to:
+
+* `INSTALLED CSV` => `0.0.1`
+* `CURRENT CSV` => `0.0.2`
+* `STATUS` => `UpgradePending`
+
+========
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+PACKAGE              SUBSCRIPTION         INSTALLED CSV               CURRENT CSV                 STATUS          AGE
+{app_name}-operator  {app_name}-operator  {app_name}-operator.v0.0.1  {app_name}-operator.v0.0.2  UpgradePending  4m43s
+----
+
+So no changes so far, we have to upgrade to actually upgrade the image of the operator and move to the next version.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl operator upgrade $\{OPERATOR_NAME} -n operator-tests
+----
+
+Note that the result is `upgraded`!
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+operator "{app_name}-operator" upgraded; installed csv is "{app_name}-operator.v0.0.2"
+----
+
+=== Final tests
+
+Finally, let’s check the result.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod -n operator-tests
+----
+
+And yes… there it is the second container!
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME                                                      READY   STATUS    RESTARTS   AGE
+{crd_name_lc}-sample-6d88cb67b6-7r9fl                        2/2     Running   0          10s
+{crd_name_lc}-sample-6d88cb67b6-xxsgx                        2/2     Running   0          11s
+{app_name}-operator-controller-manager-75c9f846b8-pqlkv   2/2     Running   0          31s
+----
+
+You made it, full stop.
+
+[#final-thoughts]
+== Final thoughts
+
+This is just an example that tries to cover a lot of land… I think it should be enough to start enjoying the Operator Framework. There’s still a lot to learn!

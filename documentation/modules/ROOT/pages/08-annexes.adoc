@@ -1,0 +1,42 @@
+include::_attributes.adoc[]
+
+An operator creates/manages things in a Kubernetes cluster as defined in what we call a Custom Resource. Well the definition of that type of object is called Custom Resource Definition (or CRD for short). We could also call it API… kind of right? Well in this context when we say API we’re referring to the CRD.
+
+For instance, this CR of type Kafka creates a Kafka cluster named `my-cluster' where the storage is ephemeral and the number of replicas is 3.
+
+[source,yaml]
+----
+apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  name: my-cluster
+  labels: {}
+  namespace: gramola-olm-test
+spec:
+  kafka:
+    config:
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      log.message.format.version: '2.5'
+    version: 2.5.0
+    storage:
+      type: ephemeral
+    replicas: 3
+    listeners:
+      plain:
+        authentiation:
+          type: scram-sha-512
+      tls:
+        authentiation:
+          type: tls
+  entityOperator:
+    topicOperator:
+      reconciliationIntervalSeconds: 90
+    userOperator:
+      reconciliationIntervalSeconds: 120
+  zookeeper:
+    storage:
+      type: ephemeral
+    replicas: 3
+----

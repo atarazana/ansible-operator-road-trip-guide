@@ -1,0 +1,4 @@
+include::versions.adoc[]
+
+* Access to an OCI compliant image registry where you can push images, I’ll be using https://quay.io[quay.io], other registries should work as well.
+* Kubernetes/OpenShift Cluster (where you have administrative permissions) or use https://minikube.sigs.k8s.io/docs/start/[Minikube] as we’re going to do most of the time in this guide.

@@ -1,0 +1,195 @@
+include::_attributes.adoc[]
+= Running v0.0.1
+
+Before we run our code we need to have a Kubernetes cluster. Let’s create one.
+
+NOTE: No worries, if you already have one is fine no need to create a new one. But make sure you're `cluster-admin` or can request help from someone who is.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+minikube start
+----
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+😄  minikube v1.12.3 on Darwin 10.15.2
+✨  Automatically selected the docker driver. Other choices: hyperkit, virtualbox
+👍  Starting control plane node minikube in cluster minikube
+🔥  Creating docker container (CPUs=2, Memory=3892MB) ...
+🐳  Preparing Kubernetes v1.18.3 on Docker 19.03.8 ...
+🔎  Verifying Kubernetes components...
+🌟  Enabled addons: default-storageclass, storage-provisioner
+🏄  Done! kubectl is now configured to use "minikube"
+----
+
+Check minikube is fine.
+
+TIP: Run this command several times... sometimes you could get status `NotReady` while the node is starting.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get node
+----
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME       STATUS   ROLES    AGE   VERSION
+minikube   Ready    master   26m   v1.18.3
+----
+
+Before running the operator, the CRD must be registered within the Kubernetes apiserver:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make install
+----
+
+Now it’s time to deploy our operator as you would with any other kubernetes `Deployment`.
+
+[#running-as-a-normal-deployment]
+== Running v0.0.1 as a normal deployment
+
+Let’s go a step further and run the operator as a pod. But wait, before we do that we need an image, right? No worries there’s a target for that in the makefile.
+
+TIP: Have a look to the `Makefile` targets and try to understand what they do.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make docker-build
+----
+
+Now we need to push the image to the registry. Be sure you’re logged in before start swearing!
+
+CAUTION: Don’t forget to go to your registry and make the image public!
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make docker-push
+----
+
+It’s time to deploy the operator! Run this target:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make deploy
+----
+
+You should expect an output like this:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+...
+/usr/local/bin/kustomize build config/default | kubectl apply -f -
+namespace/{app_name}-operator-system created
+customresourcedefinition.apiextensions.k8s.io/appdefinitions.{app_name}.atarazana.com configured
+role.rbac.authorization.k8s.io/{app_name}-operator-leader-election-role created
+clusterrole.rbac.authorization.k8s.io/{app_name}-operator-manager-role created
+clusterrole.rbac.authorization.k8s.io/{app_name}-operator-proxy-role created
+clusterrole.rbac.authorization.k8s.io/{app_name}-operator-metrics-reader created
+rolebinding.rbac.authorization.k8s.io/{app_name}-operator-leader-election-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/{app_name}-operator-manager-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/{app_name}-operator-proxy-rolebinding created
+service/{app_name}-operator-controller-manager-metrics-service created
+deployment.apps/{app_name}-operator-controller-manager created
+----
+
+TIP: Did you noticed the objects created, including the namespace, `{app_name}-operator-system`?
+
+[#checking-out-the-deployment]
+== Checking out the deployment
+
+Let’s check if there’s a `Deployment` in the proper namespace
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get deploy --all-namespaces | grep $\{OPERATOR_NAME} 
+----
+
+If everything is fine you should see our `{app_name}-operator-controller-manager` deployment in namespace `{app_name}-operator-system`, something like this:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+{app_name}-operator-system   {app_name}-operator-controller-manager   1/1     1            1           6m8s
+----
+
+[#create-the-1st-cr]
+== Create the 1st instance of our CR
+
+We want to test our code, this means we have to create an object of the type expected by our operator `{crd_name}` in our case. We have deployed our operator in a given namespace, so, either we change context to that namespace or we create our `CR` directly in that namespace. We’ll do the latter:
+
+TIP: Don’t forget to load the environment if in a different terminal!
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl apply -n $\{PROJECT_NAME} -f ./config/samples/{app_name}_v1_appdefinition.yaml 
+----
+
+The error output should look like this one.
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+The {crd_name_lc} "{crd_name_lc}-sample" is invalid: spec.size: Required value
+----
+
+Open the file `./config/samples/{app_name}_v1_appdefinition.yaml` and change it to resemble this one.
+
+TIP: Try `size: -1` you should get this error: _The {crd_name_lc} ``{crd_name_lc}-sample'' is invalid: spec.size: Invalid value: 0: spec.size in body should be greater than or equal to 0_
+
+[.console-input]
+[source,yaml,subs="attributes+"]
+----
+apiVersion: {app_name}.{organization}/v1
+kind: {crd_name}
+metadata:
+  name: {crd_name_lc}-sample
+spec:
+  # Add fields here
+  size: 2
+----
+
+Try again, now with a proper value.
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+kubectl apply -f ./config/samples/{app_name}_v1_appdefinition.yaml 
+----
+
+And you should see this output.
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+{crd_name_lc}.{app_name}.atarazana.com/{crd_name_lc}-sample created
+----
+
+Now if you run the next command and you get the Memcached pods along with the operator pod you're fine; so, pat yourself!
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod -n $\{PROJECT_NAME} 
+----
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME                                                   READY   STATUS    RESTARTS   AGE
+{crd_name_lc}-sample-bf69d6cdf-drjt8                   1/1     Running   0          62s
+{crd_name_lc}-sample-bf69d6cdf-hjndh                   1/1     Running   0          62s
+{app_name}-operator-controller-manager-66cc7987b5-jr7cz   2/2     Running   0          9m48s
+----
+

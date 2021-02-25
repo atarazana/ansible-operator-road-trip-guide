@@ -1,0 +1,188 @@
+include::_attributes.adoc[]
+= Building your first {operator_type} operator
+
+[#create-operator-scaffold]
+== Create the operator scaffold
+
+Let’s create the project scafflod using `operator-sdk init`. 
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+operator-sdk init --plugins=ansible --domain=$\{ORGANIZATION}
+----
+
+You should get something like this…
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+Next: define a resource with:
+$ operator-sdk create api
+----
+
+As the suggested let’s create an api.
+
+[#create-an-api]
+== Create an API
+
+We’re not covering the basics around operators in this chapter but you can find an overview of some concopts xref:07-annexes.adoc[here].
+
+As we explained in the xref:index.adoc#controllers[overview] `CRDs` are like classes and `CRs` like instances of those and a `Controller` tracks its state and tries to move it to the desired state expressed in `CRs`. Or if you like CRs are the fuel for Controllers, the heart of our operator.
+
+In the case of our operator the CRD is simple, it comprises the next attributes:
+
+* *size*: number of Memcached replicas
+
+We have digressed a little, so, let's go back to the task we have to carry out, _creating an API_. Well, creating an API in the context of an {operator_type} operator means, generating an empty role and provide the means to trigger it everytime an `{crd_name}` `CR` is created, modified or deleted. 
+
+Run the next command that creates an {operator_type} role related to our operator `CRD`, `{crd_name}`.
+
+NOTE: The name of the role is auto-generated, `{crd_name_lc}` in this case.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+operator-sdk create api --group $\{APP_NAME} --version v1 --kind {crd_name} --generate-role
+----
+
+You can find the generated role, `{crd_name_lc}`, inside `./roles` additionally `watches.yaml` has been updated with the following. As you can see the contents of `watches.yaml` connects a given `GKV` (Group, Kind and Version) with a `role`.
+
+NOTE: As the name `watches.yaml` suggests, our operator _watches_ different objects and execute roles everytime changes are detected.
+
+.`watches.yaml` extract matching the CRD with the role you just generated
+[source,yaml,subs="attributes+"]
+----
+---
+# Use the 'create api' subcommand to add watches to this file.
+- version: v1
+  group: minerva.atarazana
+  kind: {crd_name}
+  role: {crd_name_lc}
+# +kubebuilder:scaffold:watch
+----
+
+[#setup-python-venv]
+== Setup a Python virtual environment
+
+I’m using macOS and I found that in order to meet the requirements to run my role I needed to update Python to a level macOS didn’t like… so I googled my problem and hit link:https://sourabhbajaj.com/mac-setup/Python/virtualenv.html[this] gem.
+
+So the idea is to create a virtual python environment… bear with me and run this commands inside the project folder.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+python3 -m venv ./venv
+source venv/bin/activate
+----
+
+Now your prompt should look like `(venv)`. Please run these commands to install required modules.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+pip install ansible
+ansible-galaxy install -r requirements.yml
+pip install ansible ansible-runner ansible-runner-http openshift jmespath
+----
+
+NOTE: To leave the virtual env just deactivate it with `deactivate`.
+
+[#init-repo]
+== Init the git repo
+
+Let's define first what to ignore by adding this at the end of the file `.gitignore`.
+
+CAUTION: Run this once... or you'll get these lines added multiple times.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+cat << EOF >> .gitignore
+# Other
+.DS_Store
+downloaded/
+
+# Virtual Python Env
+venv/
+EOF
+----
+
+Init the repo and add all files so far.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+git init
+git add .gitignore
+git add *
+git commit -a -m "init"
+----
+
+== Let’s add some sugar to the Makefile
+
+Now we’re going to replace the Makefile with the next one. Open `./Makefile` and substitute the content with this.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+include::example$Makefile.example[]
+----
+
+Now let’s explain a little what we have changed.
+
+.*Variables:*
+____
+Don’t worry if you don’t know what’s a bundle, a bundle index or a catalog we’ll cover that later. Just be conscious of the changes we have made.
+____
+
+* We have deleted the `VERSION ?= 0.0.1` and added `include settings.sh`
+* Changed `BUNDLE_IMG` so that the bundle image is a full name related to the operator name and version
+* Added `FROM_BUNDLE_IMG` to do the same but for the previous version, in this demo it will be 0.0.1
+* Added `Bundle Index tag` section to define bundle index images similarly to the bundle images
+* Updated `IMG`, again to make the operator image name dependent of the environment variables.
+* Added target `undeploy` to delete all the objects created when `deploy` is run
+* Added targets `bundle-push`, `bundle-validate` and `bundle-all` to push the bundle image to the registry, validate it or do all at once
+* Added targets `index-build`, `index-push`, `index-export` and `index-registry-serve` to handle bundle indexes and debug if necessary
+* Added targets `catalog-deploy-prev`, `install-operator`, `catalog-deploy`, `upgrade-operator`, `uninstall-operator` and `catalog-undeploy` to handle the operator catalog and as a whole to run a demonstration.
+
+[NOTE]
+========
+Take into account that this guide and it's assets were created for demonstration purposes, you should take it as a source of inspiration and to help you get started not as a _one-size-fit-all-kind-of_ template.
+========
+
+== Building v0.0.1
+
+Well it’s time to look into the code and make it actually do something.
+As we have explained at the core of any operator lays a controller watching at Kubernetes events, in particular events related to objects of interest, for instance our CRDs and other object the operator owns (Pods, Deployments, etc.).
+
+[#adding-actual-code]
+=== Adding Actual Code
+
+In this simple example we want to deploy a Memcached cluster and one of the attributes of the specification of the cluster
+could include `number of replicas` as an attribute, right? We will call that attribute `size`.
+
+Please open `./roles/{crd_name_lc}/tasks/main.yml` and substitute the content with this:
+
+NOTE: We use `k8s` module to create and maintain a `Deployment` object that creates a Memcached cluster which number of replicas is `size`.
+
+[.console-input]
+[source,yaml,subs="attributes+"]
+----
+include::example${crd_name_lc}-role-main-task-v0.0.1.yaml[]
+----
+
+[#defining-crd]
+=== Defining the CRD (API)
+
+We haven't fully defined the API because we haven't updated the `CRD` nor the sample `CR`, let's do it.
+
+Let’s update the CRD, open `./config/crd/bases/minerva.atarazana_appdefinitions.yaml` and substitute with this.
+
+[.console-input]
+[source,yaml,subs="attributes+"]
+----
+include::example${crd_name_lc}-crd.yaml[]
+----
+
+

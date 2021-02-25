@@ -1,0 +1,93 @@
+include::_attributes.adoc[]
+= Setup the project
+
+[#login-to-registry]
+== Log in to the registry you use
+
+You need the an account to use a container registry as the repository for your operator manifests bundle. Then use those credentials to log in using docker/podman. 
+
+NOTE: For instance you can create a free account in link:https://quay.io[quay.io]
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+docker login {container_registry}
+----
+
+CAUTION: Before continuing with the guide please run this command with the proper value (your user in the registry).
+
+[source,bash,subs="attributes+"]
+----
+export REG_USERNAME=%REG_USERNAME%
+----
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+Username: <registry_username>
+Password: 
+Login Succeeded
+----
+
+[#define-envvars]
+== Define environment variables
+
+Let’s define some environment variables that will come handy later. For the sake of simplicity we'll create a script to load environment variables.
+
+CAUTION: All lab should happen inside a folder... please think of one and subtitute in the next snippet, then run it.
+
+[source,bash,subs="attributes+"]
+----
+export LAB_FOLDER=%LAB_FOLDER%
+mkdir $\{LAB_FOLDER} && cd $\{LAB_FOLDER}
+----
+
+CAUTION: You can change the `APP_NAME`, `ORGANIZATION`. *BUT* definitely you want to change `USERNAME` with the container registry account user name you have.
+
+[source,bash,subs="attributes+"]
+----
+cat << 'EOF' > ./settings.sh
+
+export APP_NAME={app_name}
+export OPERATOR_NAME=$\{APP_NAME}-operator
+export OPERATOR_IMAGE=$\{OPERATOR_NAME}-image
+
+export ORGANIZATION={organization}
+export DOMAIN=$\{ORGANIZATION}.com
+export API_VERSION=$\{APP_NAME}.${DOMAIN}/v1
+
+export PROJECT_NAME=$\{OPERATOR_NAME}-system
+
+export USERNAME=%REG_USERNAME%
+
+export VERSION=0.0.1
+EOF
+----
+
+Load environment:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+chmod u+x ./settings.sh
+. ./settings.sh
+----
+
+[#create-project-folder]
+== Create the operator project
+
+We need to create the folder for the template code and change to it.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+mkdir $\{OPERATOR_NAME} && cd $\{OPERATOR_NAME} 
+----
+
+We’re going to need the environment variables inside the operator folder, so let's move the `setting.sh` file inside the operator folder.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+mv ../settings.sh .
+----

@@ -1,0 +1,668 @@
+include::_attributes.adoc[]
+= Deploy your operator with the Operator Lifecycle Manager
+
+[#create-a-bunde-and-image]
+== Create a bundle and its corresponding image
+
+First things first… *What’s a bundle?*
+
+.*From the original link:https://github.com/operator-framework/operator-registry#manifest-format[documentation] of the Operator Framework*
+[quote, 'link:https://github.com/operator-framework[Operator Framework]', 'https://github.com/operator-framework/operator-registry#manifest-format[Manifest Format]']
+____
+*We refer to a directory of files with one `ClusterServiceVersion` as a `bundle`*. A bundle *typically includes* a *ClusterServiceVersion and the CRDs* that define the owned APIs of the CSV in its manifest directory, though additional objects may be included. *It also includes an annotations file in its metadata folder which defines some higher level aggregate data* that helps to describe the format and package information about how the bundle should be added into an index of bundles.
+____
+
+.*Example bundle*
+[source,bash]
+----
+ etcd
+ ├── manifests
+ │   ├── etcdcluster.crd.yaml
+ │   └── etcdoperator.clusterserviceversion.yaml
+ └── metadata
+     └── annotations.yaml
+----
+
+So a bundle is a bunch of files that define the operator and how to run it, it includes:
+
+* *Cluster Service Version:* in its turn includes
+** Name, examples, capabilities, …
+** Permissions (Role), Cluster Permissions (ClusterRole)
+** Reference to CRDs owned by the operator
+* *CRD:* Definition of the CRDs owned by the operator 
+* *Annotations:* annotations that describe the bundle and how it’s organized
+
+*How do you make a bundle?*
+
+As mostly everything since Operator SDK 1.0.0 there’s a makefile target for it. And you guessed well you run it with `make bundle`. So go to the terminal window, make sure the environment is loaded and run:
+
+TIP: Before running the command have a look to the output bellow and prepare some nice answers to the questions asked while running the target. No worries, you can change those later if you need to.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make bundle
+----
+
+Example output:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+go: creating new go.mod: module tmp
+go: finding sigs.k8s.io/controller-tools/cmd v0.3.0
+go: finding sigs.k8s.io v0.3.0
+go: finding sigs.k8s.io/controller-tools/cmd/controller-gen v0.3.0
+/Users/{os_username}/go/bin/controller-gen "crd:trivialVersions=true" rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+operator-sdk generate kustomize manifests -q
+
+Display name for the operator (required): 
+> {app_name_cap}      
+
+Description for the operator (required): 
+> Deploys a Memcached cluster
+
+Provider s name for the operator (required): 
+> {organization_display}
+
+Any relevant URL for the provider name (optional): 
+> {organization_link}
+
+Comma-separated list of keywords for your operator (required): 
+> {operator_tags}
+
+Comma-separated list of maintainers and their emails (e.g. 'name1:email1, name2:email2') (required): 
+> admin@{domain}
+cd config/manager && /usr/local/bin/kustomize edit set image controller={container_registry}/{reg_username}/{app_name}-operator-image:v0.0.1
+/usr/local/bin/kustomize build config/manifests | operator-sdk generate bundle -q --overwrite --version 0.0.1  
+INFO[0000] Building annotations.yaml                    
+INFO[0000] Writing annotations.yaml in /Users/{os_username}/operators/{app_name}-operator/bundle/metadata 
+INFO[0000] Building Dockerfile                          
+INFO[0000] Writing bundle.Dockerfile in /Users/{os_username}/operators/{app_name}-operator 
+operator-sdk bundle validate ./bundle
+INFO[0000] Found annotations file                        bundle-dir=bundle container-tool=docker
+INFO[0000] Could not find optional dependencies file     bundle-dir=bundle container-tool=docker
+INFO[0000] All validation tests have completed successfully 
+----
+
+Now have a look to the generated folder `./bundle`.
+
+Also have a look to
+`./config/manifests/base/{app_name}.clusterserviceversion.yaml` this file is a template and is where you should make changes to `name`, `description`, `icon`, etc.
+
+For instance edit the file `{app_name}.clusterserviceversion.yaml` and change `spec.description` with the proposed text.
+
+
+CAUTION: Indentation is critical here… don’t tell me I didn’t tell you ;-)
+
+[source,yaml]
+----
+spec:
+  description: |
+    Minerva was the artisans' and architects' Godess, here just a sample operator that deploys Memcached.
+    [Memcached](https://en.wikipedia.org/wiki/Memcached) is a cache system.
+
+    ### This is just a sample operator
+    This operator deploy memcached pods by creating a Deployment object. The code of the operator is [here](https://github.com/atarazana/minerva-operator).
+
+    ### Supported Features
+    **Install**
+----
+
+Also change `spec->icon->base64data` as follows (one line):
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+ "PHN2ZyBpZD0iQ2FwYV8xIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGc+PHBhdGggZD0ibTE1OS42NzQgMTY4LjkwNWgyODAuOTQzdjEyMi43ODJoLTI4MC45NDN6IiBmaWxsPSIjMmI0ZDY2Ii8+PHBhdGggZD0ibTQ0NC4yOSAyODYuNTM1IDcuNDYzIDU4LjQ2NWM1LjExMiA0MC4wNDUtMjYuMDkgNzUuNDgzLTY2LjQ2IDc1LjQ4M2gtMTcwLjMwNWMtNDAuMzcgMC03MS41NzItMzUuNDM4LTY2LjQ2LTc1LjQ4M2w3LjQ2My01OC40NjQiIGZpbGw9IiMzNjVlN2QiLz48cGF0aCBkPSJtMjg4Ljk4NiA0MjAuNDgzaC03My45OThjLTQwLjM3MyAwLTcxLjU2Ny0zNS40MzgtNjYuNDU3LTc1LjQ4MWw3LjQ1OC01OC40NjNoNzMuOTk4bC03LjQ1OCA1OC40NjNjLTUuMTA5IDQwLjA0MyAyNi4wODQgNzUuNDgxIDY2LjQ1NyA3NS40ODF6IiBmaWxsPSIjMmI0ZDY2Ii8+PGc+PHBhdGggZD0ibTQzMS4zMzQgNTEyaC02Ni43NTZsLTQzLjM5MS0xMi43OTUtOTQuNTE5IDEyLjc5NWgtNTcuNzIxYzIxLjE4LTM1Ljc5OSA1Ni41NzctNjIuMTgyIDk4LjQ0NC03MS4zNS4yMzctLjA1Mi40ODQtLjEwMy43MjEtLjE1NXYtNTUuNTE2aDY0LjA2N3Y1NS41MTZjLjI0Ny4wNTIuNDk0LjEwMy43MzEuMTY1IDcuODUgMS43MiAxNS40NjMgNC4wMzggMjIuODA4IDYuOTIzIDMuODc0IDEuNTE0LTIuNjE3IDEzLjQ4NSAxLjA5MiAxNS4yOTggMy4zMTcgMS42MjggMTYuODY0LTYuOTEzIDIwLjA0Ny01LjA1OCAyMi40NDkgMTMuMTE0IDQxLjIzOSAzMS44MDEgNTQuNDc3IDU0LjE3N3oiIGZpbGw9IiNmZmRkY2UiLz48cGF0aCBkPSJtMzMyLjE3OSAzODQuOTc5djI2LjMyMWMtNy4yNzMgMS40ODMtMTQuODA0IDIuMjY2LTIyLjUyIDIuMjY2aC0xOS4wMjdjLTcuNzE2IDAtMTUuMjQ3LS43ODMtMjIuNTItMi4yNjZ2LTI2LjMyMXoiIGZpbGw9IiNmZmNiYmUiLz48cGF0aCBkPSJtMzc5LjY0MSA0NTkuNDgxdi4wMWwtMTUuMDYxIDUyLjUwOWgtMTM3LjkxbDEyOS4xODUtNjQuMzY2YzguMzEzIDMuMjY2IDE2LjI2NiA3LjI0MiAyMy43ODYgMTEuODQ3eiIgZmlsbD0iI2UwNGI2NiIvPjxwYXRoIGQ9Im0yODIuMjA4IDM4NC45Nzl2NTUuNTE2Yy0yMy42MjIgOS4wMjQtNDMuNjA4IDM1LjUtNTUuNTM3IDcxLjUwNWgtNTcuNzIxYzIxLjMwNC0zNi4wMDUgNTYuOTktNjIuNDggOTkuMTY1LTcxLjUwNXYtNTUuNTE2eiIgZmlsbD0iI2ZmY2JiZSIvPjwvZz48cGF0aCBkPSJtNDQwLjYxOSAxNjguOTA4djEzLjkyOGwtMTQwLjQ2NS0zNi4xOC0xNDAuNDc1IDM2LjE4di0xMy45MjhjMC0xMy4zNDEgMS44NjUtMjYuMjQ5IDUuMzQ3LTM4LjQ3NyAxLjM4LTQuODgzIDMuMDI5LTkuNjYzIDQuOTE0LTE0LjMyIDIwLjg3MS01MS40MTYgNzEuMzA5LTg3LjY3OSAxMzAuMjA1LTg3LjY3OWguMDFjNTguODk2IDAgMTA5LjMzMyAzNi4yNjIgMTMwLjIwNSA4Ny42NzkgMS44ODUgNC42NTYgMy41MzQgOS40MzYgNC45MjQgMTQuMzMgMy40NyAxMi4yMjkgNS4zMzUgMjUuMTI3IDUuMzM1IDM4LjQ2N3oiIGZpbGw9IiNmZmMyNTAiLz48cGF0aCBkPSJtMzQyLjc5OSAzNS4wMjJjLTU2LjczMiAxOC4wNDktOTcuODI2IDcxLjE2NS05Ny44MjYgMTMzLjg4MmgtODUuMjk5YzAtNzcuNTgzIDYyLjg5Mi0xNDAuNDc1IDE0MC40NzUtMTQwLjQ3NSAxNC44NjYgMCAyOS4xOTYgMi4zMDggNDIuNjUgNi41OTN6IiBmaWxsPSIjZTdhNTJlIi8+PGcgZmlsbD0iI2ZmY2JiZSI+PGNpcmNsZSBjeD0iMTU4LjQ3MyIgY3k9IjI3Mi44ODQiIHI9IjQwLjgwOCIvPjxjaXJjbGUgY3g9IjQ0MS44MTUiIGN5PSIyNzIuODg0IiByPSI0MC44MDgiLz48L2c+PHBhdGggZD0ibTE4NC4wNjggMjgzLjg4Yy0yLjcxNCAwLTUuMzQ3LTEuNDMzLTYuNzYtMy45NzMtMi4zNzUtNC4yNzEtNi40MjMtNi42NzgtMTIuMzc1LTcuMzU5LTUuMjIzLS41OTctOS43ODcuNDU1LTkuODMzLjQ2NS00LjE0MS45NzYtOC4zMDYtMS41NzYtOS4zLTUuNzExLS45OTMtNC4xMzUgMS41MjItOC4yOTEgNS42NTItOS4zMDQuNjkyLS4xNyA2Ljk3Ny0xLjYzNSAxNC42NTctLjg2NSAxMS4yMzUgMS4xMjkgMTkuNzc4IDYuNDA3IDI0LjcwNCAxNS4yNjQgMi4wNzQgMy43MjkuNzMyIDguNDM0LTIuOTk3IDEwLjUwOC0xLjE4OS42Ni0yLjQ3OC45NzUtMy43NDguOTc1eiIgZmlsbD0iI2VhYWM5ZCIvPjxwYXRoIGQ9Im00MTYuMjIgMjgzLjg4Yy0xLjI3MSAwLTIuNTU5LS4zMTQtMy43NDgtLjk3NS0zLjcyOS0yLjA3NC01LjA3MS02Ljc3OS0yLjk5Ny0xMC41MDggNC45MjYtOC44NTcgMTMuNDY5LTE0LjEzNSAyNC43MDQtMTUuMjY0IDcuNjc3LS43NzEgMTMuOTY1LjY5NSAxNC42NTcuODY1IDQuMTQ0IDEuMDE3IDYuNjc5IDUuMjAxIDUuNjYyIDkuMzQ1LTEuMDE1IDQuMTM0LTUuMTggNi42NjctOS4zMTQgNS42Ny0uMTU0LS4wMzUtNC42NzItMS4wNTYtOS44MjktLjQ2NC01Ljk1Mi42ODEtOS45OTkgMy4wODktMTIuMzc1IDcuMzYtMS40MTMgMi41MzgtNC4wNDYgMy45Ny02Ljc2IDMuOTcxeiIgZmlsbD0iI2VhYWM5ZCIvPjxwYXRoIGQ9Im00MjEuMzcyIDIzNS45MTJ2NDAuMjM5YzAgNjEuNjk3LTUwLjAxNSAxMTEuNzEzLTExMS43MTMgMTExLjcxM2gtMTkuMDI3Yy02MS42OTcgMC0xMTEuNzIzLTUwLjAxNS0xMTEuNzIzLTExMS43MTN2LTQwLjIzOWw2LjU3My0xNC41MDUgNS4wNjgtMTEuMTU3YzQuNTg0LTEwLjEwNiAxMS45MDktMTguNDA5IDIwLjg3MS0yNC4xODkgOC45NjMtNS43NzkgMTkuNTUzLTkuMDI0IDMwLjY1OC05LjAyNCAyNC44NjkgMCA0Ni44MzItMTYuMjQ2IDU0LjEwNS00MC4wMjJsMy45NjYtMTIuOTggMy45NTYgMTIuOThjMy42MzcgMTEuODg4IDEwLjk0IDIxLjg5MSAyMC40NDkgMjguOTI3czIxLjIxMSAxMS4wOTUgMzMuNjU2IDExLjA5NWMyMi4yMTEgMCA0Mi4zNjEgMTIuOTkxIDUxLjUzIDMzLjIxM2w1LjA1OCAxMS4xNTd6IiBmaWxsPSIjZmZkZGNlIi8+PHBhdGggZD0ibTQxNC44IDIyMS40MDctMTE0LjY0OS0yOS41MjUtMTE0LjY2OSAyOS41MjUgNS4wNjgtMTEuMTU3YzQuNTg0LTEwLjEwNiAxMS45MDktMTguNDA5IDIwLjg3MS0yNC4xODkgOC45NjMtNS43NzkgMTkuNTUzLTkuMDI0IDMwLjY1OC05LjAyNCAyNC44NjkgMCA0Ni44MzItMTYuMjQ2IDU0LjEwNS00MC4wMjJsMy45NjYtMTIuOTggMy45NTYgMTIuOThjMy42MzcgMTEuODg4IDEwLjk0IDIxLjg5MSAyMC40NDkgMjguOTI3czIxLjIxMSAxMS4wOTUgMzMuNjU2IDExLjA5NWMyMi4yMTEgMCA0Mi4zNjEgMTIuOTkxIDUxLjUzIDMzLjIxM3oiIGZpbGw9IiNmZmNiYmUiLz48cGF0aCBkPSJtMzMzLjYzNyAzODUuMjc5Yy03LjcxNiAxLjctMTUuNzQxIDIuNTg2LTIzLjk3MiAyLjU4NmgtMTkuMDM3Yy02MS42OTcgMC0xMTEuNzIyLTUwLjAxNS0xMTEuNzIyLTExMS43MTF2LTQwLjIzOGwxMS42NDEtMjUuNjYyYzQuNTg0LTEwLjEwNiAxMS45MDktMTguNDA5IDIwLjg3MS0yNC4xODhzMTkuNTUzLTkuMDI0IDMwLjY1OC05LjAyNGMxLjI3NyAwIDIuNTQ0LS4wNDEgMy44MTItLjEyNHY5OS4yMzZjLS4wMDEgNTMuNDY1IDM3LjU2OSA5OC4xNjQgODcuNzQ5IDEwOS4xMjV6IiBmaWxsPSIjZmZjYmJlIi8+PGcgZmlsbD0iIzJiNGQ2NiI+PHBhdGggZD0ibTI0Mi41NjIgMjM3LjA2OWMtMi45MjQgMC01LjYyNiAxLjI5Mi03Ljg0IDMuNDYybC01LjEwOS0zLjYzNWMtMy40NzctMi40NzMtOC4zMDEtMS42Ni0xMC43NzUgMS44MTctMi40NzMgMy40NzctMS42NiA4LjMwMSAxLjgxNyAxMC43NzVsOC4zOTMgNS45NzFjMCAuMDQ0LS4wMDUuMDg3LS4wMDUuMTMyIDAgMTAuMjEzIDYuMDY0IDE4LjUyMSAxMy41MTkgMTguNTIxczEzLjUxOS04LjMwOCAxMy41MTktMTguNTIxLTYuMDY0LTE4LjUyMi0xMy41MTktMTguNTIyeiIvPjxwYXRoIGQ9Im0zODEuNDUgMjM4LjcxM2MtMi40NzQtMy40NzctNy4yOTgtNC4yOS0xMC43NzUtMS44MTdsLTUuMTA5IDMuNjM1Yy0yLjIxNC0yLjE3LTQuOTE2LTMuNDYyLTcuODQtMy40NjItNy40NTQgMC0xMy41MTkgOC4zMDktMTMuNTE5IDE4LjUyMnM2LjA2NCAxOC41MjEgMTMuNTE5IDE4LjUyMSAxMy41MTktOC4zMDggMTMuNTE5LTE4LjUyMWMwLS4wNDUtLjAwNS0uMDg3LS4wMDUtLjEzMmw4LjM5My01Ljk3MWMzLjQ3Ny0yLjQ3NCA0LjI5LTcuMjk4IDEuODE3LTEwLjc3NXoiLz48L2c+PHBhdGggZD0ibTI1OS45NDIgMjE4LjMzOGMtMS45NzcgMC0zLjk1NS0uNzU0LTUuNDYzLTIuMjYzLTIuOTctMi45Ny02LjkxNy00LjYwNS0xMS4xMTctNC42MDVzLTguMTQ3IDEuNjM1LTExLjExNyA0LjYwNWMtMy4wMTcgMy4wMTctNy45MDkgMy4wMTgtMTAuOTI3IDAtMy4wMTctMy4wMTctMy4wMTgtNy45MDkgMC0xMC45MjcgNS44ODgtNS44ODggMTMuNzE2LTkuMTMxIDIyLjA0NC05LjEzMSA4LjMyNyAwIDE2LjE1NiAzLjI0MyAyMi4wNDQgOS4xMzEgMy4wMTggMy4wMTggMy4wMTcgNy45MDkgMCAxMC45MjctMS41MSAxLjUwOC0zLjQ4NyAyLjI2My01LjQ2NCAyLjI2M3oiIGZpbGw9IiNlYWFjOWQiLz48cGF0aCBkPSJtMzc0LjY3MyAyMTguMzM4Yy0xLjk3NyAwLTMuOTU1LS43NTUtNS40NjMtMi4yNjMtMi45Ny0yLjk2OS02LjkxOC00LjYwNS0xMS4xMTctNC42MDUtNC4yIDAtOC4xNDggMS42MzYtMTEuMTE4IDQuNjA1LTMuMDE3IDMuMDE3LTcuOTA5IDMuMDE3LTEwLjkyNyAwcy0zLjAxOC03LjkwOSAwLTEwLjkyN2MxMi4xNTUtMTIuMTU0IDMxLjkzMy0xMi4xNTUgNDQuMDg4IDAgMy4wMTggMy4wMTcgMy4wMTggNy45MDkgMCAxMC45MjctMS41MDkgMS41MDgtMy40ODYgMi4yNjMtNS40NjMgMi4yNjN6IiBmaWxsPSIjZWFhYzlkIi8+PHBhdGggZD0ibTMwMC4xNDEgMzE0Ljk3NmMtMTQuMjY4IDAtMjcuMDc3LTkuNTQxLTMxLjE1LTIzLjIwMy0xLjIxOS00LjA5IDEuMTA4LTguMzkzIDUuMTk3LTkuNjEyIDQuMDg4LTEuMjE5IDguMzkyIDEuMTA4IDkuNjEyIDUuMTk3IDIuMTM1IDcuMTYzIDguODU2IDEyLjE2NSAxNi4zNDIgMTIuMTY1IDcuNDk1IDAgMTQuMjE0LTQuOTk5IDE2LjMzOS0xMi4xNTcgMS4yMTUtNC4wOTEgNS41MTYtNi40MjIgOS42MDYtNS4yMDggNC4wOTEgMS4yMTUgNi40MjIgNS41MTYgNS4yMDggOS42MDYtNC4wNiAxMy42NjgtMTYuODcgMjMuMjEyLTMxLjE1NCAyMy4yMTJ6IiBmaWxsPSIjZWFhNTk4Ii8+PHBhdGggZD0ibTQ0MC42MTkgMTY4LjkwOHYxMy45MjhsLTE0MC40NjUtMzYuMTgtMTQwLjQ3NSAzNi4xOHYtMTMuOTI4YzAtMTMuMzQxIDEuODY1LTI2LjI0OSA1LjM0Ny0zOC40NzdsOC42NjQtNC4xMSAxNS40NTMtNy4zMzUgMzIuMzc5LTE1LjM4MSAxNS40NTMtNy4zMzUgNTUuNDU1LTI2LjMzMSA3LjcxNi0zLjY2OCA3LjczNyAzLjY3OCA1NS40NDQgMjYuMzIxIDE1LjQ1MyA3LjMzNSAzMi4zNzkgMTUuMzgxLjE5Ni4wOTMgMTUuMjU3IDcuMjQyIDguNjc0IDQuMTIxYzMuNDY4IDEyLjIyOCA1LjMzMyAyNS4xMjYgNS4zMzMgMzguNDY2eiIgZmlsbD0iI2U3YTUyZSIvPjxwYXRoIGQ9Im00NTIuMjcgMTQ5LjEyOXY1OS4zMThsLTI1LjY2Mi02LjYxNC0xNS40NTItMy45NzYtMzIuMzc5LTguMzM1LTE1LjQ1My0zLjk4Ni01NS40NDQtMTQuMjc5LTcuNzM3LTEuOTg4LTcuNzE2IDEuOTg4LTU1LjQ1NCAxNC4yNzktMTUuNDUzIDMuOTg2LTMyLjM3OSA4LjMzNS0xNS40NTIgMy45NzYtMjUuNjYyIDYuNjE0di01OS4zMThsMjUuNjYyLTEyLjE4NyAxNS40NTItNy4zMzUgMzIuMzc5LTE1LjM4MSAxNS40NTMtNy4zMzQgNTUuNDU0LTI2LjMzMiA3LjcxNi0zLjY2NyA3LjczNyAzLjY3NyA1NS40NDQgMjYuMzIyIDE1LjQ1MyA3LjMzNCAzMi4zNzkgMTUuMzgxLjE5NS4wOTMgMTUuMjU3IDcuMjQyeiIgZmlsbD0iI2ZmYzI1MCIvPjxwYXRoIGQ9Im0zMjkuODc3IDBoLTU5LjQ2M2MtMTAuMDY1IDAtMTcuNTA3IDkuMzczLTE1LjIyNSAxOS4xNzZsNC43OTQgMjAuNTk3YzIuMzMgMTAuMDEgMTEuMjUxIDE3LjA5MyAyMS41MjkgMTcuMDkzaDM3LjI2N2MxMC4yNzcgMCAxOS4xOTktNy4wODMgMjEuNTI5LTE3LjA5M2w0Ljc5NC0yMC41OTdjMi4yODItOS44MDMtNS4xNi0xOS4xNzYtMTUuMjI1LTE5LjE3NnoiIGZpbGw9IiNlMDRiNjYiLz48cGF0aCBkPSJtMzEwLjI5NiA1Ni44NjZoLTI4Ljc4M2MtMTAuMjcxIDAtMTkuMTkyLTcuMDg4LTIxLjUzMS0xNy4wOTFsLTQuNzktMjAuNjA0Yy0yLjI3Ny05Ljc5NiA1LjE2MS0xOS4xNzEgMTUuMjI2LTE5LjE3MWgyOC43NzNjLTEwLjA2NSAwLTE3LjUwMyA5LjM3NS0xNS4yMjYgMTkuMTcybDQuODAxIDIwLjYwNGMyLjMyNyAxMC4wMDIgMTEuMjQ5IDE3LjA5IDIxLjUzIDE3LjA5eiIgZmlsbD0iI2RlMWQ0OSIvPjxnIGZpbGw9IiNlN2E1MmUiPjxwYXRoIGQ9Im0xODkuMTQxIDEyOS42MDd2NjguMjVsLTE1LjQ1MiAzLjk3NnYtNjQuODkxbDUuMjM5LTcuMjk1eiIvPjxwYXRoIGQ9Im0yMzYuOTczIDEwNi44OTJ2NzguNjQ0bC0xNS40NTMgMy45ODZ2LTc1LjI5Nmw2LjQwOS05LjkzeiIvPjxwYXRoIGQ9Im0zMDcuODggODAuNTd2OTAuNjg3bC03LjczNy0xLjk4OC03LjcxNiAxLjk4OHYtOTAuNjk3bDcuNzE2LTcuNDM4eiIvPjxwYXRoIGQ9Im00MjYuNjA4IDEzNi45NDJ2NjQuODkxbC0xNS40NTItMy45NzZ2LTY4LjI1bC4xOTUuMDkzIDguMzEyLTEuMDgxeiIvPjxwYXRoIGQ9Im0zNzguNzc3IDExNC4yMjZ2NzUuMjk2bC0xNS40NTMtMy45ODZ2LTc4LjY0NGw2LjA4OC0zLjYyM3oiLz48L2c+PHBhdGggZD0ibTU2LjI3NyAyMzMuMTA1aDI4Ljc4NHYyNTEuNzIzaC0yOC43ODR6IiBmaWxsPSIjMzY1ZTdkIi8+PHBhdGggZD0ibTU2LjI3NyAyMzMuMTA1aDEzLjY2MXYyNTEuNzIzaC0xMy42NjF6IiBmaWxsPSIjMmI0ZDY2Ii8+PHBhdGggZD0ibTczLjI5OSA0NDYuODQzaC01LjI2Yy0xMi43NTkgMC0yMy4xMDIgMTAuMzQzLTIzLjEwMiAyMy4xMDJ2MTguOTUzYzAgMTIuNzU5IDEwLjM0MyAyMy4xMDIgMjMuMTAyIDIzLjEwMmg1LjI2YzEyLjc1OSAwIDIzLjEwMi0xMC4zNDMgMjMuMTAyLTIzLjEwMnYtMTguOTUzYzAtMTIuNzU5LTEwLjM0My0yMy4xMDItMjMuMTAyLTIzLjEwMnoiIGZpbGw9IiNmZmRkY2UiLz48cGF0aCBkPSJtODEuNDU3IDUxMC41MTFjLTIuNTM0Ljk1OC01LjI4NSAxLjQ4My04LjE1OSAxLjQ4M2gtNS4yNjRjLTEyLjc1NCAwLTIzLjA5Ny0xMC4zNDMtMjMuMDk3LTIzLjA5N3YtMTguOTU1YzAtMTIuNzU0IDEwLjM0My0yMy4wOTcgMjMuMDk3LTIzLjA5N2g1LjI2NGMyLjg3NCAwIDUuNjI1LjUyNSA4LjE1OSAxLjQ4My04LjcyNiAzLjI5Ny0xNC45MzggMTEuNzM0LTE0LjkzOCAyMS42MTN2MTguOTU1YzAgOS44ODEgNi4yMTIgMTguMzE5IDE0LjkzOCAyMS42MTV6IiBmaWxsPSIjZmZjYmJlIi8+PHBhdGggZD0ibTkxLjgyMSAxNjcuNTc5aC00Mi4zMDR2NjYuMzQ5YzAgNS4zNjggNC4zNTEgOS43MTkgOS43MTkgOS43MTloMjIuODY2YzUuMzY4IDAgOS43MTktNC4zNTEgOS43MTktOS43MTl6IiBmaWxsPSIjZWRlNmUzIi8+PHBhdGggZD0ibTc3Ljg0NyAyNDMuNjUzaC0xOC42MTVjLTUuMzY3IDAtOS43MTUtNC4zNDctOS43MTUtOS43MjV2LTY2LjM0NGgxOC42MTV2NjYuMzQ0YzAgNS4zNzggNC4zNDggOS43MjUgOS43MTUgOS43MjV6IiBmaWxsPSIjZDhjZWM5Ii8+PHBhdGggZD0ibTEwOS42OTQgMTU3LjI2OS0xMy4xMjEgMzMuOTEyYy0uNzIgMS44NjEtMi41MTEgMy4wODgtNC41MDYgMy4wODhoLTQyLjc5N2MtMS45OTYgMC0zLjc4Ni0xLjIyNy00LjUwNi0zLjA4OGwtMTMuMTIxLTMzLjkxMmMtMi45My03LjU3Mi0zLjAxNi0xNS45NS0uMjQ0LTIzLjU4MWwyOC44OTctNzkuNTI4YzMuNTIxLTkuNjkgMTcuMjI1LTkuNjkgMjAuNzQ2IDBsMjguODk2IDc5LjUyOGMyLjc3MyA3LjYzMSAyLjY4NiAxNi4wMDgtLjI0NCAyMy41ODF6IiBmaWxsPSIjZWRlNmUzIi8+PHBhdGggZD0ibTcwLjY2IDQ2Ljg5NWMtMS40ODMuMDEtMi45NTcgMi40MzEtMy41NjQgNy4yNjNsLTkuOTQxIDc5LjUzYy0uOTU4IDcuNjM0LS45MjcgMTYuMDA5LjA4MiAyMy41ODFsNC41MTIgMzMuOTE0Yy4yNDcgMS44NjUuODY1IDMuMDkxIDEuNTU2IDMuMDkxaC0xNC4wNDJjLTEuOTg4IDAtMy43ODEtMS4yMjYtNC41MDItMy4wOTFsLTEzLjEyNC0zMy45MTRjLTIuOTI2LTcuNTcyLTMuMDE4LTE1Ljk0Ny0uMjM3LTIzLjU4MWwyOC44ODYtNzkuNTNjMS43NjEtNC44NDIgNi4wNjgtNy4yNjMgMTAuMzc0LTcuMjYzeiIgZmlsbD0iI2Q4Y2VjOSIvPjwvZz48L3N2Zz4="
+----
+
+Also change `spec->icon->mediatype` as follows (one line):
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+"image/svg+xml"
+----
+
+The end result should look like:
+
+[source,yaml]
+----
+spec:
+  icon:
+  - base64data: "PHN2ZyBpZD0iQ2FwYV8xIiBlbmFibGUtYmFja2dyb..."
+    mediatype: "image/svg+xml"
+----
+
+After making changes to the base file you have to run `make bundle` again to propagate them to the bundle. 
+
+Open file `./config/manifests/base/{operator_name}.clusterserviceversion.yaml` and check our changes are there.
+
+So far we have generated the bundle, but we need to create an image with it. This is the way we store manifests and metadata contents of individual bundles. Later we will use a tool called `opm` to build and index with it.
+
+Maybe you didn’t notice but as we generated the bundle folder also `bundle.Dockerfile` was generated. This dockerfile copies the contents of the bundle to the image which is a scratch image (not based on anyone). 
+
+.*LABELS*
+[source,dockerfile,subs="attributes+"]
+----
+FROM scratch
+
+LABEL operators.operatorframework.io.bundle.mediatype.v1=registry+v1
+LABEL operators.operatorframework.io.bundle.manifests.v1=manifests/
+LABEL operators.operatorframework.io.bundle.metadata.v1=metadata/
+LABEL operators.operatorframework.io.bundle.package.v1={app_name}-operator
+LABEL operators.operatorframework.io.bundle.channels.v1=alpha
+LABEL operators.operatorframework.io.bundle.channel.default.v1=
+LABEL operators.operatorframework.io.metrics.builder=operator-sdk-v1.0.0
+LABEL operators.operatorframework.io.metrics.mediatype.v1=metrics+v1
+LABEL operators.operatorframework.io.metrics.project_layout=go.kubebuilder.io/v2
+LABEL operators.operatorframework.io.test.config.v1=tests/scorecard/
+LABEL operators.operatorframework.io.test.mediatype.v1=scorecard+v1
+
+COPY bundle/manifests /manifests/
+COPY bundle/metadata /metadata/
+COPY bundle/tests/scorecard /tests/scorecard/
+----
+
+Let’s create and push the image. But before, let's create a .dockerignore file and add this to it to speed up the building:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+cat << EOF >> .dockerignore
+./testbin
+./bin
+.git
+./venv
+EOF
+----
+
+Now execute this commands:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make bundle-build
+make bundle-push
+----
+
+CAUTION: Don’t forget to make the image repository public!
+
+You can validate the bundle image like this.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make bundle-validate
+----
+
+[#create-bundle-index]
+== Creating the Bundle Index
+
+Again, first things first... *What’s a Bundle Index?*
+
+.*From the original link:https://github.com/operator-framework/operator-registry#manifest-format[documentation] of the Operator Framework*
+[quote, 'link:https://github.com/operator-framework[Operator Framework]', 'https://github.com/operator-framework/operator-registry#building-an-index-of-operators-using-opm[Building and index of operators]']
+____
+. OLM has the concept of *CatalogSources* which *define a reference to what packages are available to install onto a cluster*.
+. To make your bundle available, *you can add the bundle to a container image which the CatalogSource points to (=>the bundle index<=)*.
+. *This image contains a database of pointers to bundle images* that OLM can pull and extract the manifests from in order to install an operator.
+____
+
+The image that follows shows the structure of channels, bundles, bundles indexes and operator images. Let me explain it a little bit.
+
+Everything in a round-cornered rectangle is an image, we have:
+
+* Images containing the binary of our operator, for example: `operator-image:v0.0.2`
+* The we have bundle images, such as `operator-bundle:v0.0.2`, these contain the manifests corresponding to a given version and in which channels it is visible. It’s important to note that if one version replaces another one it’s stated in one of these manifests, specifically on the CSV.
+* Finally we have bundle indexes images like `operator-index:v0.0.2` that hold a database which contains the bundles (manifests) of different versions and how they relate and into what channel and an GRPC service you can query.
+
+Additionally, I have colored lanes for channels and bundle indexes. So, for instance index `operator-index:v0.0.2` comprises:
+
+* versions 0.0.1 TO 0.0.4 for alpha channel
+* versions 0.0.2 AND 0.0.4 for beta channel
+* version 0.0.2 for stable channel
+
+image::olm-diagram-1.svg[OLM Registry]
+
+To make your operator available to OLM, you can generate an index image via `opm` with your bundle reference included. For example:
+
+NOTE: We’ll install `opm` later don’t freak out.
+
+[source,sh]
+----
+opm index add --bundles {container_registry}/my-container-registry-namespace/my-manifest-bundle:0.0.1 --tag {container_registry}/my-container-registry-namespace/my-index:1.0.0
+----
+
+*The resulting image is referred to as an ``Index''*. It is an image
+which contains a database of pointers to operator manifest content that
+is easily queriable via an included API that is served when the
+container image is run.
+
+*Index images are additive*, so you can add a new version of your
+operator bundle when you publish a new version. For instance:
+
+[source,bash,subs="attributes+"]
+----
+opm index add --bundles {container_registry}/my-container-registry-namespace/my-manifest-bundle:0.0.2 --from-index {container_registry}/my-container-registry-namespace/my-index:1.0.0 --tag {container_registry}/my-container-registry-namespace/my-index:1.0.1
+----
+
+So, it turns out that we need link:https://github.com/operator-framework/operator-registry#building-an-index-of-operators-using-opm[`opm`] to generate and update images (and the SQLite databases underneath).
+
+Let’s install it. *In a new terminal*.
+
+CAUTION: it's a new terminal, don't forget to `export LAB_FOLDER` as we did before!
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+mkdir -p $\{LAB_FOLDER}/tools
+cd $\{LAB_FOLDER}/tools
+git clone https://github.com/operator-framework/operator-registry
+cd operator-registry
+make
+cp ./bin/opm $\{LAB_FOLDER}/bin
+export PATH=${PATH}:$\{LAB_FOLDER}/bin
+----
+
+PATH should include `$\{LAB_FOLDER}/bin` so you should be able to check `opm` version:
+
+[source,sh]
+----
+$ opm version
+Version: version.Version{OpmVersion:"v1.13.8-5-gfa10df6", GitCommit:"fa10df6", BuildDate:"2020-08-28T08:39:05Z", GoOs:"darwin", GoArch:"amd64"}
+----
+
+Finally… we can generate version 0.0.1 or our index including version 0.0.1 of our bundle:
+
+NOTE: Index versioning is independent… in this `simple' lab we’re aligning bundles and indexes for the sake of simplicity.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make index-build
+----
+
+If no problems where found let’s push the index image.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make index-push
+----
+
+CAUTION: Don’t forget to make the image public!
+
+Congratulations you have created your first bundle index, now you can create a CatalogSource. But before you do, you’d have to install OLM in your cluster (unless you’re using OpenShift 4.x, then OLM is already in place).
+
+== Installing OLM
+
+Installing (and checking) OLM in a Kubernetes cluster should be a straight forward task. Let’s run first this command to check if OLM it’s already installed. Unless you have already installed OLM or your cluster is an OpenShift cluster you should get this error: `no existing installation found'.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+operator-sdk olm status
+----
+
+The output should look like:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+I0828 10:55:05.539831   32781 request.go:621] Throttling request took 1.048345416s, request: GET:https://127.0.0.1:32776/apis/scheduling.k8s.io/v1beta1?timeout=32s
+FATA[0002] Failed to get OLM status: error getting installed OLM version (set --version to override the default version): no existing installation found 
+----
+
+Let’s install the latest version.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+operator-sdk olm install
+----
+
+This is the expected output:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+INFO[0000] Fetching CRDs for version "latest"           
+INFO[0002] Fetching resources for version "latest"      
+I0828 10:56:45.873946   32784 request.go:621] Throttling request took 1.048694344s, request: GET:https://127.0.0.1:32776/apis/scheduling.k8s.io/v1?timeout=32s
+INFO[0008] Creating CRDs and resources                  
+INFO[0008]   Creating CustomResourceDefinition "catalogsources.operators.coreos.com" 
+INFO[0008]   Creating CustomResourceDefinition "clusterserviceversions.operators.coreos.com" 
+INFO[0008]   Creating CustomResourceDefinition "installplans.operators.coreos.com" 
+INFO[0009]   Creating CustomResourceDefinition "operatorgroups.operators.coreos.com" 
+INFO[0009]   Creating CustomResourceDefinition "subscriptions.operators.coreos.com" 
+INFO[0009]   Creating Namespace "olm"                   
+INFO[0009]   Creating Namespace "operators"             
+INFO[0009]   Creating ServiceAccount "olm/olm-operator-serviceaccount" 
+INFO[0009]   Creating ClusterRole "system:controller:operator-lifecycle-manager" 
+INFO[0009]   Creating ClusterRoleBinding "olm-operator-binding-olm" 
+INFO[0009]   Creating Deployment "olm/olm-operator"     
+INFO[0010]   Creating Deployment "olm/catalog-operator" 
+INFO[0010]   Creating ClusterRole "aggregate-olm-edit"  
+INFO[0010]   Creating ClusterRole "aggregate-olm-view"  
+INFO[0010]   Creating OperatorGroup "operators/global-operators" 
+INFO[0010]   Creating OperatorGroup "olm/olm-operators" 
+INFO[0010]   Creating ClusterServiceVersion "olm/packageserver" 
+INFO[0011]   Creating CatalogSource "olm/operatorhubio-catalog" 
+INFO[0011] Waiting for deployment/olm-operator rollout to complete 
+INFO[0011]   Waiting for Deployment "olm/olm-operator" to rollout: 0 of 1 updated replicas are available 
+INFO[0026]   Deployment "olm/olm-operator" successfully rolled out 
+INFO[0026] Waiting for deployment/catalog-operator rollout to complete 
+INFO[0026]   Waiting for Deployment "olm/catalog-operator" to rollout: 0 of 1 updated replicas are available 
+INFO[0030]   Deployment "olm/catalog-operator" successfully rolled out 
+INFO[0030] Waiting for deployment/packageserver rollout to complete 
+INFO[0030]   Waiting for Deployment "olm/packageserver" to rollout: 1 out of 2 new replicas have been updated 
+INFO[0038]   Waiting for Deployment "olm/packageserver" to rollout: 1 old replicas are pending termination 
+INFO[0048]   Deployment "olm/packageserver" successfully rolled out 
+INFO[0048] Successfully installed OLM version "latest"  
+
+NAME                                            NAMESPACE    KIND                        STATUS
+catalogsources.operators.coreos.com                          CustomResourceDefinition    Installed
+clusterserviceversions.operators.coreos.com                  CustomResourceDefinition    Installed
+installplans.operators.coreos.com                            CustomResourceDefinition    Installed
+operatorgroups.operators.coreos.com                          CustomResourceDefinition    Installed
+subscriptions.operators.coreos.com                           CustomResourceDefinition    Installed
+olm                                                          Namespace                   Installed
+operators                                                    Namespace                   Installed
+olm-operator-serviceaccount                     olm          ServiceAccount              Installed
+system:controller:operator-lifecycle-manager                 ClusterRole                 Installed
+olm-operator-binding-olm                                     ClusterRoleBinding          Installed
+olm-operator                                    olm          Deployment                  Installed
+catalog-operator                                olm          Deployment                  Installed
+aggregate-olm-edit                                           ClusterRole                 Installed
+aggregate-olm-view                                           ClusterRole                 Installed
+global-operators                                operators    OperatorGroup               Installed
+olm-operators                                   olm          OperatorGroup               Installed
+packageserver                                   olm          ClusterServiceVersion       Installed
+operatorhubio-catalog                           olm          CatalogSource               Installed
+----
+
+Great we’re ready to create a CatalogSource that points to our bundle index.
+
+== Deploy a CatalogSource pointing to Bundle Index 0.0.1
+
+I have prepared a makefile target called `catalog-deploy` to do this.
+
+But before we can run it we need a CatalogSource template so that we can change the bundle image easily. Let’s create it.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+mkdir -p ./config/catalog
+cat << EOF > ./config/catalog/catalog-source.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: {organization}-catalog
+spec:
+  displayName: {organization_cap} Operators
+  publisher: {organization_display}
+  sourceType: grpc
+  image: BUNDLE_INDEX_IMG
+EOF
+----
+
+Now we can run the target `catalog-deploy` which basically substitutes `BUNDLE_INDEX_IMG` by the value of `$(BUNDLE_INDEX_IMG)` which is calculated in the makefile itself. Let’s run it.
+
+NOTE: By default this target will create the CatalogSource in `olm` namespace. To override: `make catalog-deploy CATALOG_NAMESPACE=default`
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+make catalog-deploy
+----
+
+Let’s have a look to the `CatalogSources` in our cluster.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get catalogsources --all-namespaces
+----
+
+This is a typical output:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAMESPACE   NAME                    DISPLAY               TYPE   PUBLISHER        AGE
+olm         {organization}-catalog       {organization_cap} Operators   grpc   {organization_display}   41s
+olm         operatorhubio-catalog   Community Operators   grpc   OperatorHub.io   86m
+----
+
+Whenever you create a `CatalogSource` the Catalog Operator creates a pod with its information and a `PackageManifest` get created as well. Have a look to the `PackageManifests` for your organization by running this command.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get packagemanifests | grep -i {organization}
+----
+
+And you should get this:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+{app_name}-operator                        Atarazana Operators   52s
+----
+
+[#catalogsource-testing]
+== CatalogSource Testing
+
+You can check if the catalog is working properly doing this:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod --all-namespaces | grep {organization}
+----
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+olm           {organization}-catalog-zhnbh            1/1     Running   0          8m11s
+----
+
+[NOTE]
+========
+.*Optional tests*
+You need this (or other) GRPC client to run this tests link:https://github.com/fullstorydev/grpcurl#installation[`grpcurl`].
+
+As the CatalogSource is basically a GRPC REST API to a database containing bundles this test will first port-forward the port this GRPC service listens at, 50051, and second run a query to see if it works properly and the content is as expected.
+
+Now with the pod name let’s forward port 50051 to localhost:50051.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl port-forward -n olm {organization}-catalog-zhnbh 50051:50051
+----
+
+From another terminal run this command, pay attention to `pkgName` its value is the operator name.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+grpcurl -plaintext -d '{"pkgName":"{app_name}-operator","channelName":"alpha"}' localhost:50051 api.Registry/GetBundleForChannel
+----
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+{
+  "csvName": "{app_name}-operator.v0.0.1",
+  "packageName": "{app_name}-operator",
+  "channelName": "alpha",
+  "csvJson": "..."
+  ],
+  "bundlePath": "{container_registry}/cvicens/{app_name}-operator-bundle:v0.0.1",
+  "providedApis": [
+    {
+      "group": "{app_name}.atarazana.com",
+      "version": "v1",
+      "kind": "{crd_name}",
+      "plural": "{crd_name_lc}s"
+    }
+  ],
+  "version": "0.0.1",
+  "properties": [
+    {
+      "type": "olm.gvk",
+      "value": "{\"group\":\"{app_name}.atarazana.com\",\"kind\":\"{crd_name}\",\"version\":\"v1\"}"
+    },
+    {
+      "type": "olm.package",
+      "value": "{\"packageName\":\"{app_name}-operator\",\"version\":\"0.0.1\"}"
+    }
+  ]
+}
+----
+========
+
+[#install-operator-with-kubectl-plugin]
+== Install your operator with a kubectl plugin
+
+In order to install the operator you can choose between:
+
+* using `kubectl-operator` plugin
+* using OLM console (if your cluster is OpenShift)
+
+Here we’re going to use `kubectl-operator` because our cluster is `minikube`. So the first step is installing it. In a new terminal:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+mkdir -p $\{LAB_FOLDER}/tools
+cd $\{LAB_FOLDER}/tools
+git clone https://github.com/operator-framework/kubectl-operator
+cd kubectl-operator
+make
+cp ./bin/kubectl-operator $\{LAB_FOLDER}/bin
+export PATH=$\{PATH}:$\{LAB_FOLDER}/tools
+----
+
+Let’s check our operator kubectl plugin is in place and working.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl operator list-available {operator_name}
+----
+
+You should get something like:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME                 CATALOG              CHANNEL  LATEST CSV                  AGE
+{app_name}-operator  Atarazana Operators  alpha    {app_name}-operator.v0.0.1  21m
+----
+
+Let’s create a namespace to install our operator.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl create ns operator-tests
+----
+
+And let’s install it there:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl operator -n operator-tests install {operator_name} --create-operator-group -v v0.0.1
+----
+
+As you can see several objects will be created: the `OperatorGroup` that defines ... the `Subscription` and the `Operator` itself.
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+operatorgroup "operator-tests" created
+subscription "{app_name}-operator" created
+operator "{app_name}-operator" installed; installed csv is "{app_name}-operator.v0.0.1"
+----
+
+Let’s check if it’s been installed.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl operator list
+----
+
+Check the expected result:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+PACKAGE              SUBSCRIPTION         INSTALLED CSV               CURRENT CSV                 STATUS         AGE
+{app_name}-operator  {app_name}-operator  {app_name}-operator.v0.0.1  {app_name}-operator.v0.0.1  AtLatestKnown  76s
+----
+
+Check the operator's pod is up and running.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod -n operator-tests
+----
+
+[#create-cr]
+== Create an {crd_name} CR
+
+In order to test our operator we have to create our sample `CR`.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl apply -n operator-tests -f ./config/samples/{app_name}_v1_{crd_name_lc}.yaml 
+----
+
+If all has gone according to plan the `Controller` reconciliation loop should be receiving events and Memcached pods should be created… in fact, as many as `spec->size` states.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+kubectl get pod -n operator-tests
+----
+
+And here's the expected output:
+
+[.console-output]
+[source,bash,subs="attributes+"]
+----
+NAME                                                      READY   STATUS    RESTARTS   AGE
+{crd_name_lc}-sample-bf69d6cdf-rk4v5                         1/1     Running   0          14s
+{crd_name_lc}-sample-bf69d6cdf-znj4w                         1/1     Running   0          14s
+{app_name}-operator-controller-manager-589d887cf7-whpt6   2/2     Running   0          3m46s
+----
+
+Great you have tested version 0.0.1 of your operator running
+automatically through the
+https://github.com/operator-framework/operator-lifecycle-manager[Operator
+Lifecycle Manager].
+
+[#branch-for-0.0.1]
+== Branching tagging version 0.0.1
+
+We’ve reached a milestone, let’s create a branch for it (I know, maybe a tag would be better… no problem if you decide to do it with a tag).
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+git add .dockerignore bundle* config 
+git commit -a -m "0.0.1 ok"
+
+git checkout -b 0.0.1
+git checkout master
+----
+
+Well done, let's continue with the evolution of our operator!

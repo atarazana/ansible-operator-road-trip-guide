@@ -1,0 +1,41 @@
+include::versions.adoc[]
+
+The following CLI tools are optional for running the exercises in this tutorial.
+// Although they are used in the tutorial, you could use others without any problem.
+
+[cols="4*^,4*.",options="header,+attributes"]
+|===
+
+|**Tool**|**macOS**|**Fedora**|**windows**
+
+| https://github.com/stedolan/jq[jq v1.6.0]
+| https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64[Download]
+| https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64[Download]
+| https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe[Download]
+
+// | https://httpie.org/[httpie]
+// | `brew install httpie`
+// | `dnf install httpie`
+// | https://httpie.org/doc#windows-etc
+
+// | watch
+// | `brew install watch`
+// | `dnf install procps-ng`
+// |
+// 
+// | kubectx and kubens
+// | `brew install kubectx`
+// | https://github.com/ahmetb/kubectx
+// |
+// 
+// | https://github.com/rakyll/hey[hey]
+// | `brew install hey`
+// | https://storage.googleapis.com/jblabs/dist/hey_linux_v0.1.2[Download]
+// | https://storage.googleapis.com/jblabs/dist/hey_win_v0.1.2.exe[Download]
+
+| `link:https://v{operator-sdk-version-major}.sdk.operatorframework.io/docs/installation[Operator SDK {operator-sdk-version}, window=_blank]`
+| https://github.com/operator-framework/operator-sdk/releases/download/v{operator-sdk-version}/helm-operator_darwin_amd64[helm-operator]
+| https://github.com/operator-framework/operator-sdk/releases/download/v{operator-sdk-version}/helm-operator_linux_amd64[helm-operator]
+| N/A
+
+|===
