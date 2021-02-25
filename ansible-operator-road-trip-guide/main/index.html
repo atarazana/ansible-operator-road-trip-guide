@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Overview :: Ansible Operator Road Trip Guide</title>
+    <link rel="canonical" href="https://atarazana.github.io/ansible-operator-road-trip-guide/ansible-operator-road-trip-guide/main/index.html">
+    <link rel="next" href="01-setup-tools.html">
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://atarazana.github.io/ansible-operator-road-trip-guide">Ansible Operator Road Trip Guide</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+        <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-scholars.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="ansible-operator-road-trip-guide" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">Ansible Operator Road Trip</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="01-setup-tools.html">Setup Tools</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup-tools.html#resources">Resources</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup-tools.html#prerequisite">Prerequisites</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="02-setup-project.html">Setup Project</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#login-to-registry">Login to registry</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#define-envvars">Define environment variables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#create-project-folder">Create the operator project</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#setup-python-venv">Setup a Python virtual environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html">Building your 1st operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#setup-environment">Set up the environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="04-deploying-your-operator-manually.html">Deploy your operator manually</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="05-running-your-operator-locally.html">Running your operator locally</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="05-running-your-operator-locally.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">Deploy your operator with the Operator Lifecycle Manager</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="07-evolving-your-operator.html">Evolving your operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Ansible Operator Road Trip</span>
+    <span class="version">main</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Ansible Operator Road Trip</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">main</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link is-current"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Ansible Operator Road Trip</a></li>
+    <li><a href="index.html">Overview</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/atarazana/ansible-operator-road-trip-guide/edit/main/documentation/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Overview</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>For years the way to go to get something installed in an organization was finding the person of reference and file a request: by email, by phone, via a procurement portal, you name it.</p>
+</div>
+<div class="paragraph">
+<p>Of course this person had the knowledge and the means (inn general) to fulfill your request and get you what you wanted/needed. Sometimes we call this kind of person <code>operator</code> or <code>the one who knows</code>, but let&#8217;s stick to the 1st more down-to-earth name.</p>
+</div>
+<div class="paragraph">
+<p>Well, in the kubernetes world an operator is the same, true, it&#8217;s an entity not a person, but it has the knowledge and (hopefully) the resources to get you what you want. The knowledge will be (no wonder) in the shape of code running in a POD and resources, well, kubernetes is all about managing and orchestrating resources, isn&#8217;t it?</p>
+</div>
+<div class="paragraph">
+<p>But you maybe wondering&#8230;&#8203; code in a POD, that like saying nothing. True, this code is special it has to follow the <a href="https://kubernetes.io/docs/concepts/architecture/controller/#controller-pattern" target="_blank" rel="noopener">controller pattern</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="controllers"><a class="anchor" href="#controllers"></a>Controllers</h2>
+<div class="sectionbody">
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A controller tracks at least one Kubernetes resource type. These objects have a spec field that represents the desired state. The controller(s) for that resource are responsible for making the current state come closer to that desired state.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>So, imagine you want and operator capable of deploying a Kafka cluster, you would need:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a custom resource that has a spec section declaring the desired state</p>
+</li>
+<li>
+<p>a controller watching this kind of resource and reacting to events like: creation, update, deletion, &#8230;&#8203;</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This custom resource should have a spec section declaring, for instance that you want 3 zoo-keeper instances and 3 cluster nodes with ephemeral storage. Find below a sample <code>Kafka</code> custom resource.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Custom resources in kubernetes have a formal definition <a href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/" target="_blank" rel="noopener"><strong>Custom Resource Definition</strong></a> which is in fact the way to extend the kubernetes native set of objects.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-output">
+<div class="title">Sample Kafka Custom Resource</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  name: my-cluster
+spec:
+  kafka:
+    ...
+    version: 2.6.0
+    storage:
+      type: ephemeral
+    replicas: 3
+    listeners:
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+  zookeeper:
+    storage:
+      type: ephemeral
+    replicas: 3</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ok, you have a way to specifiy the desired state, now you need some code that is triggered everytime something happens to <code>Kafka</code> resources. So, all you have to do is building a controller watching this type of objects!</p>
+</div>
+<div class="paragraph">
+<p>Wait&#8230;&#8203; this is not an easy task&#8230;&#8203; which language would you use&#8230;&#8203; which client library to import&#8230;&#8203; samples?</p>
+</div>
+<div class="paragraph">
+<p>No worries, the <a href="https://operatorframework.io/" target="_blank" rel="noopener">Operator Framework</a> got you covered and offers several SDKs (Go, Ansible and Helm) to build operators in a much easier way. Not only that, this project also provides with a centrl piece in charge of the lifecycle of operators, the <a href="https://github.com/operator-framework/operator-lifecycle-manager" target="_blank" rel="noopener">Operator Lifecycle Manager</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This tutorial will guide you through the process of building and evolving an operator using your favourite automation language, Ansible, using the <a href="https://sdk.operatorframework.io/" target="_blank" rel="noopener">Operator SDK</a>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="tldr"><a class="anchor" href="#tldr"></a>TL;DR</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You are going to <strong>build version 0.0.1 of an operator that deploys a Memcached cluster</strong> with a dynamic size, this includes learning how to build the image, the bundle and the bundle index. TODO xref here!!!</p>
+</div>
+<div class="paragraph">
+<p>Then we will show you how to <strong>install the <a href="https://github.com/operator-framework/operator-lifecycle-manager" target="_blank" rel="noopener">Operator Lifecycle Manager</a> and how to configure it to be able to install your very own operator</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Finally you will <strong>evolve your operator to version 0.0.2 and see how the installed operator upgrades itself</strong> seamlessly.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="details"><a class="anchor" href="#details"></a>Details</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The next steps are basically the ones in <a href="https://sdk.operatorframework.io/docs/building-operators/golang/quickstart/">this</a>
+guide. I just compiled the steps in that guide and simplified some things. I hope ;-)</p>
+</div>
+</div>
+</div>
+<div class="sect1 tiles browse">
+<h2>Browse modules</h2>
+<div class="sectionbody">
+<div class="paragraph tile">
+<p><a href="#01-setup.adoc" class="page unresolved">Get Started</a></p>
+</div>
+<div class="ulist tile">
+<div class="title"><a href="#02-building-your-1st-operator.adoc" class="page unresolved">Building your 1st ansible operator</a></div>
+<ul>
+<li>
+<p><a href="#02a-spring-boot-common.adoc#the-code" class="page unresolved">Common</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#02a-spring-boot-common.adoc#the-code" class="page unresolved">The code</a></p>
+</li>
+<li>
+<p><a href="#02a-spring-boot-common.adoc#maven-profiles" class="page unresolved">Maven Profiles</a></p>
+</li>
+<li>
+<p><a href="#02a-spring-boot-common.adoc#run-local" class="page unresolved">Running the code locally against H2</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="#02b-spring-boot-deploy-postgresql.adoc" class="page unresolved">Using PostgreSQL as Database</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#02b-spring-boot-deploy-postgresql.adoc#deploy-database" class="page unresolved">Deploying PostgreSQL Database</a></p>
+</li>
+<li>
+<p><a href="#02b-spring-boot-deploy-postgresql.adoc#deploy-code" class="page unresolved">Deploying the code</a></p>
+</li>
+<li>
+<p><a href="#02b-spring-boot-deploy-postgresql.adoc#run-local-telepresence" class="page unresolved">Extending the inner-loop with Telepresence</a></p>
+</li>
+<li>
+<p><a href="#02b-spring-boot-deploy-postgresql.adoc#binary-deploy" class="page unresolved">Binary deploy S2I</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="#02c-spring-boot-deploy-oracle.adoc" class="page unresolved">Using Oracle as Database</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#02c-spring-boot-deploy-oracle.adoc#deploy-database" class="page unresolved">Deploying Oracle RDBMS</a></p>
+</li>
+<li>
+<p><a href="#02c-spring-boot-deploy-oracle.adoc#deploy-code" class="page unresolved">Deploying the code</a></p>
+</li>
+<li>
+<p><a href="#02c-spring-boot-deploy-oracle.adoc#run-local-telepresence" class="page unresolved">Extending the inner-loop with Telepresence</a></p>
+</li>
+<li>
+<p><a href="#02c-spring-boot-deploy-oracle.adoc#binary-deploy" class="page unresolved">Binary deploy S2I</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist tile">
+<div class="title"><a href="#03a-quarkus-common.adoc" class="page unresolved">Quarkus Inner-Loop Development</a></div>
+<ul>
+<li>
+<p><a href="#03a-quarkus-common.adoc#the-code" class="page unresolved">Common</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#03a-quarkus-common.adoc#the-code" class="page unresolved">The code</a></p>
+</li>
+<li>
+<p><a href="#03a-quarkus-common.adoc#maven-profiles" class="page unresolved">Maven Profiles</a></p>
+</li>
+<li>
+<p><a href="#03a-quarkus-common.adoc#run-local" class="page unresolved">Running the code locally against H2</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="#03b-quarkus-deploy-postgresql.adoc" class="page unresolved">Using PostgreSQL as Database</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#03b-quarkus-deploy-postgresql.adoc#deploy-database" class="page unresolved">Deploying PostgreSQL Database</a></p>
+</li>
+<li>
+<p><a href="#03b-quarkus-deploy-postgresql.adoc#deploy-code" class="page unresolved">Deploying the code</a></p>
+</li>
+<li>
+<p><a href="#03b-quarkus-deploy-postgresql.adoc#run-local-telepresence" class="page unresolved">Extending the inner-loop with Telepresence</a></p>
+</li>
+<li>
+<p><a href="#03b-quarkus-deploy-postgresql.adoc#binary-deploy" class="page unresolved">Binary deploy S2I</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="#03c-quarkus-deploy-oracle.adoc" class="page unresolved">Using Oracle as Database</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#03c-quarkus-deploy-oracle.adoc#deploy-database" class="page unresolved">Deploying Oracle RDBMS</a></p>
+</li>
+<li>
+<p><a href="#03c-quarkus-deploy-oracle.adoc#deploy-code" class="page unresolved">Deploying the code</a></p>
+</li>
+<li>
+<p><a href="#03c-quarkus-deploy-oracle.adoc#run-local-telepresence" class="page unresolved">Extending the inner-loop with Telepresence</a></p>
+</li>
+<li>
+<p><a href="#03c-quarkus-deploy-oracle.adoc#binary-deploy" class="page unresolved">Binary deploy S2I</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2>Part One: Create and Upgrade and Operator using <a href="https://github.com/operator-framework/operator-lifecycle-manager">OLM</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>…</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="next"><a href="01-setup-tools.html" class="query-params-link">Setup Tools</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

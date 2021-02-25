@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Building your first ansible operator :: Ansible Operator Road Trip Guide</title>
+    <link rel="canonical" href="https://atarazana.github.io/ansible-operator-road-trip-guide/ansible-operator-road-trip-guide/main/03-building-your-1st-operator.html">
+    <link rel="prev" href="02-setup-project.html">
+    <link rel="next" href="04-deploying-your-operator-manually.html">
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://atarazana.github.io/ansible-operator-road-trip-guide">Ansible Operator Road Trip Guide</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+        <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-scholars.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="ansible-operator-road-trip-guide" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">Ansible Operator Road Trip</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="01-setup-tools.html">Setup Tools</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup-tools.html#resources">Resources</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup-tools.html#prerequisite">Prerequisites</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="02-setup-project.html">Setup Project</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#login-to-registry">Login to registry</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#define-envvars">Define environment variables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#create-project-folder">Create the operator project</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#setup-python-venv">Setup a Python virtual environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html">Building your 1st operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#setup-environment">Set up the environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="04-deploying-your-operator-manually.html">Deploy your operator manually</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="05-running-your-operator-locally.html">Running your operator locally</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="05-running-your-operator-locally.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">Deploy your operator with the Operator Lifecycle Manager</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="07-evolving-your-operator.html">Evolving your operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Ansible Operator Road Trip</span>
+    <span class="version">main</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Ansible Operator Road Trip</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">main</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Ansible Operator Road Trip</a></li>
+    <li><a href="03-building-your-1st-operator.html">Building your 1st operator</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/atarazana/ansible-operator-road-trip-guide/edit/main/documentation/modules/ROOT/pages/03-building-your-1st-operator.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Building your first ansible operator</h1>
+<div class="sect1">
+<h2 id="create-operator-scaffold"><a class="anchor" href="#create-operator-scaffold"></a>Create the operator scaffold</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let’s create the project scafflod using <code>operator-sdk init</code>.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">operator-sdk init --plugins=ansible --domain=${ORGANIZATION}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should get something like this…</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">Next: define a resource with:
+$ operator-sdk create api</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As the suggested let’s create an api.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-an-api"><a class="anchor" href="#create-an-api"></a>Create an API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We’re not covering the basics around operators in this chapter but you can find an overview of some concopts <a href="#07-annexes.adoc" class="page unresolved">here</a>.</p>
+</div>
+<div class="paragraph">
+<p>As we explained in the <a href="index.html#controllers" class="page">overview</a> <code>CRDs</code> are like classes and <code>CRs</code> like instances of those and a <code>Controller</code> tracks its state and tries to move it to the desired state expressed in <code>CRs</code>. Or if you like CRs are the fuel for Controllers, the heart of our operator.</p>
+</div>
+<div class="paragraph">
+<p>In the case of our operator the CRD is simple, it comprises the next attributes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>size</strong>: number of Memcached replicas</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We have digressed a little, so, let&#8217;s go back to the task we have to carry out, <em>creating an API</em>. Well, creating an API in the context of an ansible operator means, generating an empty role and provide the means to trigger it everytime an <code>AppDefinition</code> <code>CR</code> is created, modified or deleted.</p>
+</div>
+<div class="paragraph">
+<p>Run the next command that creates an ansible role related to our operator <code>CRD</code>, <code>AppDefinition</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The name of the role is auto-generated, <code>appdefinition</code> in this case.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">operator-sdk create api --group ${APP_NAME} --version v1 --kind AppDefinition --generate-role</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can find the generated role, <code>appdefinition</code>, inside <code>./roles</code> additionally <code>watches.yaml</code> has been updated with the following. As you can see the contents of <code>watches.yaml</code> connects a given <code>GKV</code> (Group, Kind and Version) with a <code>role</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+As the name <code>watches.yaml</code> suggests, our operator <em>watches</em> different objects and execute roles everytime changes are detected.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title"><code>watches.yaml</code> extract matching the CRD with the role you just generated</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# Use the 'create api' subcommand to add watches to this file.
+- version: v1
+  group: minerva.atarazana
+  kind: AppDefinition
+  role: appdefinition
+# +kubebuilder:scaffold:watch</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="setup-python-venv"><a class="anchor" href="#setup-python-venv"></a>Setup a Python virtual environment</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I’m using macOS and I found that in order to meet the requirements to run my role I needed to update Python to a level macOS didn’t like… so I googled my problem and hit <a href="https://sourabhbajaj.com/mac-setup/Python/virtualenv.html">this</a> gem.</p>
+</div>
+<div class="paragraph">
+<p>So the idea is to create a virtual python environment… bear with me and run this commands inside the project folder.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">python3 -m venv ./venv
+source venv/bin/activate</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now your prompt should look like <code>(venv)</code>. Please run these commands to install required modules.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">pip install ansible
+ansible-galaxy install -r requirements.yml
+pip install ansible ansible-runner ansible-runner-http openshift jmespath</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+To leave the virtual env just deactivate it with <code>deactivate</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="init-repo"><a class="anchor" href="#init-repo"></a>Init the git repo</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let&#8217;s define first what to ignore by adding this at the end of the file <code>.gitignore</code>.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+Run this once&#8230;&#8203; or you&#8217;ll get these lines added multiple times.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt; EOF &gt;&gt; .gitignore
+# Other
+.DS_Store
+downloaded/
+
+# Virtual Python Env
+venv/
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Init the repo and add all files so far.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">git init
+git add .gitignore
+git add *
+git commit -a -m "init"</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_lets_add_some_sugar_to_the_makefile"><a class="anchor" href="#_lets_add_some_sugar_to_the_makefile"></a>Let’s add some sugar to the Makefile</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now we’re going to replace the Makefile with the next one. Open <code>./Makefile</code> and substitute the content with this.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">include settings.sh
+
+# Default bundle image tag
+BUNDLE_IMG ?= quay.io/$(USERNAME)/$(OPERATOR_NAME)-bundle:v$(VERSION)
+FROM_BUNDLE_IMG ?= quay.io/$(USERNAME)/$(OPERATOR_NAME)-bundle:v$(FROM_VERSION)
+# Options for 'bundle-build'
+ifneq ($(origin CHANNELS), undefined)
+BUNDLE_CHANNELS := --channels=$(CHANNELS)
+endif
+ifneq ($(origin DEFAULT_CHANNEL), undefined)
+BUNDLE_DEFAULT_CHANNEL := --default-channel=$(DEFAULT_CHANNEL)
+endif
+BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
+
+# Bundle Index tag
+BUNDLE_INDEX_IMG ?= quay.io/$(USERNAME)/$(OPERATOR_NAME)-index:v$(VERSION)
+FROM_BUNDLE_INDEX_IMG ?= quay.io/$(USERNAME)/$(OPERATOR_NAME)-index:v$(FROM_VERSION)
+
+# Catalog default namespace
+CATALOG_NAMESPACE?=olm
+
+# Image URL to use all building/pushing image targets
+IMG ?= quay.io/$(USERNAME)/$(OPERATOR_IMAGE):v$(VERSION)
+
+all: docker-build
+
+# Run against the configured Kubernetes cluster in ~/.kube/config
+run: ansible-operator
+	$(ANSIBLE_OPERATOR) run
+
+# Install CRDs into a cluster
+install: kustomize
+	$(KUSTOMIZE) build config/crd | kubectl apply -f -
+
+# Uninstall CRDs from a cluster
+uninstall: kustomize
+	$(KUSTOMIZE) build config/crd | kubectl delete -f -
+
+# Deploy controller in the configured Kubernetes cluster in ~/.kube/config
+deploy: kustomize
+	cd config/manager &amp;&amp; $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build config/default | kubectl apply -f -
+
+# Undeploy controller in the configured Kubernetes cluster in ~/.kube/config
+undeploy: kustomize
+	$(KUSTOMIZE) build config/default | kubectl delete -f -
+
+# Build the docker image
+docker-build:
+	docker build . -t ${IMG}
+
+# Push the docker image
+docker-push:
+	docker push ${IMG}
+
+PATH  := $(PATH):$(PWD)/bin
+SHELL := env PATH=$(PATH) /bin/sh
+OS    = $(shell uname -s | tr '[:upper:]' '[:lower:]')
+ARCH  = $(shell uname -m | sed 's/x86_64/amd64/')
+OSOPER   = $(shell uname -s | tr '[:upper:]' '[:lower:]' | sed 's/darwin/apple-darwin/' | sed 's/linux/linux-gnu/')
+ARCHOPER = $(shell uname -m )
+
+kustomize:
+ifeq (, $(shell which kustomize 2&gt;/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p bin ;\
+	curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.5.4/kustomize_v3.5.4_$(OS)_$(ARCH).tar.gz | tar xzf - -C bin/ ;\
+	}
+KUSTOMIZE=$(realpath ./bin/kustomize)
+else
+KUSTOMIZE=$(shell which kustomize)
+endif
+
+ansible-operator:
+ifeq (, $(shell which ansible-operator 2&gt;/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p bin ;\
+	curl -LO https://github.com/operator-framework/operator-sdk/releases/download/v1.2.0/ansible-operator-v1.2.0-$(ARCHOPER)-$(OSOPER) ;\
+	mv ansible-operator-v1.2.0-$(ARCHOPER)-$(OSOPER) ./bin/ansible-operator ;\
+	chmod +x ./bin/ansible-operator ;\
+	}
+ANSIBLE_OPERATOR=$(realpath ./bin/ansible-operator)
+else
+ANSIBLE_OPERATOR=$(shell which ansible-operator)
+endif
+
+# Generate bundle manifests and metadata, then validate generated files.
+.PHONY: bundle
+bundle: kustomize
+	operator-sdk generate kustomize manifests -q
+	cd config/manager &amp;&amp; $(KUSTOMIZE) edit set image controller=$(IMG)
+	$(KUSTOMIZE) build config/manifests | operator-sdk generate bundle -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
+	operator-sdk bundle validate ./bundle
+
+# Build the bundle image.
+.PHONY: bundle-build
+bundle-build:
+	docker build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
+
+# Push the bundle image.
+bundle-push: bundle-build
+	docker push $(BUNDLE_IMG)
+
+# Do all the bundle stuff
+bundle-validate: bundle-push
+	operator-sdk bundle validate $(BUNDLE_IMG)
+
+# Do all bundle stuff
+bundle-all: bundle-build bundle-push bundle-validate
+
+# Bundle Index
+# Build bundle by referring to the previous version if FROM_VERSION is defined
+ifndef FROM_VERSION
+  CREATE_BUNDLE_INDEX  := true
+endif
+index-build:
+ifeq ($(CREATE_BUNDLE_INDEX),true)
+	opm -u docker index add --bundles $(BUNDLE_IMG) --tag $(BUNDLE_INDEX_IMG)
+else
+	echo "FROM_VERSION ${FROM_VERSION}"
+	opm -u docker index add --bundles $(BUNDLE_IMG) --from-index $(FROM_BUNDLE_INDEX_IMG) --tag $(BUNDLE_INDEX_IMG)
+endif
+
+# Push the index
+index-push: index-build
+	docker push $(BUNDLE_INDEX_IMG)
+
+# [DEBUGGING] Export the index (pulls image) to download folder
+index-export:
+	opm index export --index="$(BUNDLE_INDEX_IMG)" --package="$(OPERATOR_NAME)"
+
+# [DEBUGGING] Create a test sqlite db and serves it
+index-registry-serve:
+	opm registry add -b $(FROM_BUNDLE_IMG) -d "test-registry.db"
+	opm registry add -b $(BUNDLE_IMG) -d "test-registry.db"
+	opm registry serve -d "test-registry.db" -p 50051
+
+# [DEMO] Deploy previous index then create a sample subscription then deploy current index
+catalog-deploy-prev: # 1. Install Catalog version 0.0.1
+	sed "s|BUNDLE_INDEX_IMG|$(FROM_BUNDLE_INDEX_IMG)|" ./config/catalog/catalog-source.yaml | kubectl apply -n $(CATALOG_NAMESPACE) -f -
+
+install-operator:    # 2. Install Operator =&gt; Create AppService and create sample data
+	kubectl operator install $(OPERATOR_NAME) --create-operator-group -v v$(FROM_VERSION)
+	kubectl operator list
+
+catalog-deploy:      # 3. Upgrade Catalog to version 0.0.2
+	sed "s|BUNDLE_INDEX_IMG|$(BUNDLE_INDEX_IMG)|" ./config/catalog/catalog-source.yaml | kubectl apply -n $(CATALOG_NAMESPACE) -f -
+
+upgrade-operator:    # 4. Upgrade Operator, since it's manual this step approves the install plan. Notice schema upgraded and data migrated!
+	kubectl operator upgrade $(OPERATOR_NAME)
+
+uninstall-operator:  # 5. Clean 1. Unistall Operator and delete AppService object
+	kubectl operator uninstall $(OPERATOR_NAME) --delete-operator-groups
+
+catalog-undeploy:    # 6. Clean 2. Delete Catalog
+	sed "s|BUNDLE_INDEX_IMG|$(BUNDLE_INDEX_IMG)|" ./config/catalog/catalog-source.yaml | kubectl delete -n $(CATALOG_NAMESPACE) -f -</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now let’s explain a little what we have changed.</p>
+</div>
+<div class="quoteblock">
+<div class="title"><strong>Variables:</strong></div>
+<blockquote>
+<div class="paragraph">
+<p>Don’t worry if you don’t know what’s a bundle, a bundle index or a catalog we’ll cover that later. Just be conscious of the changes we have made.</p>
+</div>
+</blockquote>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>We have deleted the <code>VERSION ?= 0.0.1</code> and added <code>include settings.sh</code></p>
+</li>
+<li>
+<p>Changed <code>BUNDLE_IMG</code> so that the bundle image is a full name related to the operator name and version</p>
+</li>
+<li>
+<p>Added <code>FROM_BUNDLE_IMG</code> to do the same but for the previous version, in this demo it will be 0.0.1</p>
+</li>
+<li>
+<p>Added <code>Bundle Index tag</code> section to define bundle index images similarly to the bundle images</p>
+</li>
+<li>
+<p>Updated <code>IMG</code>, again to make the operator image name dependent of the environment variables.</p>
+</li>
+<li>
+<p>Added target <code>undeploy</code> to delete all the objects created when <code>deploy</code> is run</p>
+</li>
+<li>
+<p>Added targets <code>bundle-push</code>, <code>bundle-validate</code> and <code>bundle-all</code> to push the bundle image to the registry, validate it or do all at once</p>
+</li>
+<li>
+<p>Added targets <code>index-build</code>, <code>index-push</code>, <code>index-export</code> and <code>index-registry-serve</code> to handle bundle indexes and debug if necessary</p>
+</li>
+<li>
+<p>Added targets <code>catalog-deploy-prev</code>, <code>install-operator</code>, <code>catalog-deploy</code>, <code>upgrade-operator</code>, <code>uninstall-operator</code> and <code>catalog-undeploy</code> to handle the operator catalog and as a whole to run a demonstration.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Take into account that this guide and it&#8217;s assets were created for demonstration purposes, you should take it as a source of inspiration and to help you get started not as a <em>one-size-fit-all-kind-of</em> template.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_building_v0_0_1"><a class="anchor" href="#_building_v0_0_1"></a>Building v0.0.1</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Well it’s time to look into the code and make it actually do something.
+As we have explained at the core of any operator lays a controller watching at Kubernetes events, in particular events related to objects of interest, for instance our CRDs and other object the operator owns (Pods, Deployments, etc.).</p>
+</div>
+<div class="sect2">
+<h3 id="adding-actual-code"><a class="anchor" href="#adding-actual-code"></a>Adding Actual Code</h3>
+<div class="paragraph">
+<p>In this simple example we want to deploy a Memcached cluster and one of the attributes of the specification of the cluster
+could include <code>number of replicas</code> as an attribute, right? We will call that attribute <code>size</code>.</p>
+</div>
+<div class="paragraph">
+<p>Please open <code>./roles/appdefinition/tasks/main.yml</code> and substitute the content with this:</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+We use <code>k8s</code> module to create and maintain a <code>Deployment</code> object that creates a Memcached cluster which number of replicas is <code>size</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# tasks file for AppDefinition
+- name: start memcached
+  community.kubernetes.k8s:
+    definition:
+      kind: Deployment
+      apiVersion: apps/v1
+      metadata:
+        name: '{{ ansible_operator_meta.name }}-memcached'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        replicas: "{{size}}"
+        selector:
+          matchLabels:
+            app: memcached
+        template:
+          metadata:
+            labels:
+              app: memcached
+          spec:
+            containers:
+            - name: memcached
+              command:
+              - memcached
+              - -m=64
+              - -o
+              - modern
+              - -v
+              image: "docker.io/memcached:1.4.36-alpine"
+              ports:
+                - containerPort: 11211
+                  name: memcached</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="defining-crd"><a class="anchor" href="#defining-crd"></a>Defining the CRD (API)</h3>
+<div class="paragraph">
+<p>We haven&#8217;t fully defined the API because we haven&#8217;t updated the <code>CRD</code> nor the sample <code>CR</code>, let&#8217;s do it.</p>
+</div>
+<div class="paragraph">
+<p>Let’s update the CRD, open <code>./config/crd/bases/minerva.atarazana_appdefinitions.yaml</code> and substitute with this.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: appdefinitions.minerva.atarazana
+spec:
+  group: minerva.atarazana
+  names:
+    kind: AppDefinition
+    listKind: AppDefinitionList
+    plural: appdefinitions
+    singular: appdefinition
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: AppDefinition is the Schema for the appdefinitions API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec defines the desired state of AppDefinition
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+            properties:
+              size:
+                description: Size is the size of the memcached deployment
+                format: int32
+                minimum: 0
+                type: integer
+            required:
+            - size
+          status:
+            description: Status defines the observed state of AppDefinition
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+            properties:
+              nodes:
+                description: Nodes are the names of the memcached pods
+                items:
+                  type: string
+                type: array
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="02-setup-project.html" class="query-params-link">Setup Project</a></span>
+  <span class="next"><a href="04-deploying-your-operator-manually.html" class="query-params-link">Deploy your operator manually</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

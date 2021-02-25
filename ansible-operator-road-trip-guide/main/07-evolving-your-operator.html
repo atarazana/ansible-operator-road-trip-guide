@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Evolving your operator :: Ansible Operator Road Trip Guide</title>
+    <link rel="canonical" href="https://atarazana.github.io/ansible-operator-road-trip-guide/ansible-operator-road-trip-guide/main/07-evolving-your-operator.html">
+    <link rel="prev" href="06-deploying-your-operator-using-olm.html">
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://atarazana.github.io/ansible-operator-road-trip-guide">Ansible Operator Road Trip Guide</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+        <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-scholars.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="ansible-operator-road-trip-guide" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">Ansible Operator Road Trip</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="01-setup-tools.html">Setup Tools</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup-tools.html#resources">Resources</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup-tools.html#prerequisite">Prerequisites</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="02-setup-project.html">Setup Project</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#login-to-registry">Login to registry</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#define-envvars">Define environment variables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#create-project-folder">Create the operator project</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#setup-python-venv">Setup a Python virtual environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html">Building your 1st operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#setup-environment">Set up the environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="04-deploying-your-operator-manually.html">Deploy your operator manually</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="05-running-your-operator-locally.html">Running your operator locally</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="05-running-your-operator-locally.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">Deploy your operator with the Operator Lifecycle Manager</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="07-evolving-your-operator.html">Evolving your operator</a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Ansible Operator Road Trip</span>
+    <span class="version">main</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Ansible Operator Road Trip</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">main</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Ansible Operator Road Trip</a></li>
+    <li><a href="07-evolving-your-operator.html">Evolving your operator</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/atarazana/ansible-operator-road-trip-guide/edit/main/documentation/modules/ROOT/pages/07-evolving-your-operator.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Evolving your operator</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Imagine it took you a couple of weeks and now you’ve decided to improve your operator by injecting a <a href="https://kubernetes.io/blog/2015/06/the-distributed-system-toolkit-patterns/#example-1-sidecar-containers">sidecar</a> container that exposes Memcached server metrics to Prometheus on port <code>9150</code>.</p>
+</div>
+<div class="paragraph">
+<p>We’re going to use <a href="https://github.com/prometheus/memcached_exporter">this</a> Promtheus exporter. Let’s get started.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="updating-the-code"><a class="anchor" href="#updating-the-code"></a>Updating code to inject the Prometheus Exporter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Before we actually change the code let’s update the versioning environment variables in <code>./settings.sh</code></p>
+</div>
+<div class="paragraph">
+<p>We’re moving from:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export VERSION=0.0.1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>to:</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+We need <code>FROM_VERSION</code> because we differentiate from the 1st version and the rest to add new bundle images instead to the previous index instead of create a new bundle index.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export FROM_VERSION=0.0.1
+export VERSION=0.0.2</code></pre>
+</div>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+Don’t forget to save <code>./settings.sh</code>!
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now, open file <code>./controllers/appdefinition_controller.go</code> and find `Check if the deployment already exists, if not create a new one' it should around line 66. Until now the current code checks if the Deployment is already created and if not it creates it. We want to go a step further, if the deployment already exists then patch it (and add the sidecar container) if not create the deployment (also with the sidecar, although we do this later on, be patient)</p>
+</div>
+<div class="paragraph">
+<p>We’re moving from:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">          spec:
+            containers:
+            - name: memcached
+              command:
+              - memcached
+              - -m=64
+              - -o
+              - modern
+              - -v
+              image: "docker.io/memcached:1.4.36-alpine"
+              ports:
+                - containerPort: 11211
+                  name: memcached</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">          spec:
+            containers:
+            - name: memcached
+              command:
+              - memcached
+              - -m=64
+              - -o
+              - modern
+              - -v
+              image: "docker.io/memcached:1.4.36-alpine"
+              ports:
+                - containerPort: 11211
+                  name: memcached
+            - name: exporter
+              image: "quay.io/prometheus/memcached-exporter:v0.7.0"
+              ports:
+                - containerPort: 9150
+                  name: exporter</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Please open <code>./roles/appdefinition/tasks/main.yml</code> and substitute the content with this:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+# tasks file for AppDefinition
+- name: start memcached
+  community.kubernetes.k8s:
+    definition:
+      kind: Deployment
+      apiVersion: apps/v1
+      metadata:
+        name: '{{ ansible_operator_meta.name }}-memcached'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        replicas: "{{size}}"
+        selector:
+          matchLabels:
+            app: memcached
+        template:
+          metadata:
+            labels:
+              app: memcached
+          spec:
+            containers:
+            - name: memcached
+              command:
+              - memcached
+              - -m=64
+              - -o
+              - modern
+              - -v
+              image: "docker.io/memcached:1.4.36-alpine"
+              ports:
+                - containerPort: 11211
+                  name: memcached
+            - name: exporter
+              image: "quay.io/prometheus/memcached-exporter:v0.7.0"
+              ports:
+                - containerPort: 9150
+                  name: exporter</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="testing-the-new-code"><a class="anchor" href="#testing-the-new-code"></a>Testing the new code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Before we actually do so, let’s have another look to the standing status of our deployment.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pod -n operator-tests</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                                      READY   STATUS    RESTARTS   AGE
+appdefinition-sample-bf69d6cdf-rk4v5                         1/1     Running   1          2d20h
+appdefinition-sample-bf69d6cdf-znj4w                         1/1     Running   1          2d20h
+minerva-operator-controller-manager-589d887cf7-whpt6   2/2     Running   4          2d20h</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see currently <strong>there’s just one container per appdefinition pod</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Ok, time for testing. As we did before, you can run your code locally and see the result… but to avoid disturbances of the operator already running, let’s scale down the operator to <code>zero</code> replicas.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl scale deploy minerva-operator-controller-manager  --replicas=0 -n operator-tests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And check the operator pod is gone.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pod -n operator-tests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we have to run our operator code locally as we did before.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Remember the <code>Deployment</code> object our operator created is already there, so our code should be patching it not replacing.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s do run our new code locally.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make install run</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, if you check pods again, you see 2/2 instead of 1/1.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pod -n operator-tests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is the expected result.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<strong>Please copy the name of one of the pods.</strong>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                 READY   STATUS    RESTARTS   AGE
+appdefinition-sample-6d88cb67b6-7nz6j   2/2     Running   0          9m44s
+appdefinition-sample-6d88cb67b6-rgvfb   2/2     Running   0          9m37s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let’s check the exporter is working.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">POD_NAME=&lt;POD_NAME&gt;
+kubectl exec -n operator-tests -it $POD_NAME -c exporter -- wget -q -O- http://localhost:9150/metrics</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is an example out from the exporter.</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">...
+# HELP promhttp_metric_handler_requests_in_flight Current number of scrapes being served.
+# TYPE promhttp_metric_handler_requests_in_flight gauge
+promhttp_metric_handler_requests_in_flight 1
+# HELP promhttp_metric_handler_requests_total Total number of scrapes by HTTP status code.
+# TYPE promhttp_metric_handler_requests_total counter
+promhttp_metric_handler_requests_total{code="200"} 7
+promhttp_metric_handler_requests_total{code="500"} 0
+promhttp_metric_handler_requests_total{code="503"} 0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ok we&#8217;re done with the manual tests, <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span> to stop the local process.</p>
+</div>
+<div class="paragraph">
+<p>Nice! Our code works locally, let&#8217;s move on.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="running-as-normal-deployment"><a class="anchor" href="#running-as-normal-deployment"></a>Running v0.0.2 as a normal deployment</h2>
+<div class="sectionbody">
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Check that <code>VERSION</code> and <code>FROM_VERSION</code> are correct.</p>
+</li>
+<li>
+<p>Don’t forget to reload environment in any terminal you&#8217;re using for this lab.</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">. ./settings.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As we did before after running the code locally we have to build the operator image and run it from the operator deployment.</p>
+</div>
+<div class="paragraph">
+<p>Let’s build the operator image:</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+I hope you see something like this <code>Successfully tagged quay.io/{reg_username}/minerva-operator-image:v0.0.2</code> at the end of <code>make docker&#8212;&#8203;build</code> otherwise maybe you didn’t notice the <strong>TIP</strong> ;-)
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make docker-build</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let’s push the image…</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"> make docker-push</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure you’re not running the operator code locally and uninstall the operator and delete the sample <code>AppDefinition</code></p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -n operator-tests -f ./config/samples/minerva_v1_appdefinition.yaml
+kubectl operator uninstall minerva-operator -n operator-tests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let’s deploy the operator as we did with version <code>0.0.1</code></p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make deploy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let’s check image is version <code>0.0.2</code>:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get deploy minerva-operator-controller-manager -o jsonpath='{.spec.template.spec.containers[0].image}' -n $PROJECT_NAME &amp;&amp; echo</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now let’s create a sample <code>AppDefinition</code>:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -n $PROJECT_NAME -f ./config/samples/minerva_v1_appdefinition.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If it all went right there should be 2 pods with 2 containers plus the pod operator:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pod -n $PROJECT_NAME</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected result:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                                   READY   STATUS    RESTARTS   AGE
+appdefinition-sample-6d88cb67b6-gv62q                  2/2     Running   0          28s
+appdefinition-sample-6d88cb67b6-jhspm                  2/2     Running   0          28s
+minerva-operator-controller-manager-6fdbfb88d8-8v994   2/2     Running   0          12m</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Again if we run the next commands (don’t forget to replace the name of the pod with your own):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">POD_NAME=&lt;POD_NAME&gt;
+kubectl exec -n $PROJECT_NAME -it $POD_NAME -c exporter -- wget -q -O- http://localhost:9150/metrics</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As before, here you are a sample output from the metrics exporter.</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">...
+# HELP promhttp_metric_handler_requests_in_flight Current number of scrapes being served.
+# TYPE promhttp_metric_handler_requests_in_flight gauge
+promhttp_metric_handler_requests_in_flight 1
+# HELP promhttp_metric_handler_requests_total Total number of scrapes by HTTP status code.
+# TYPE promhttp_metric_handler_requests_total counter
+promhttp_metric_handler_requests_total{code="200"} 0
+promhttp_metric_handler_requests_total{code="500"} 0
+promhttp_metric_handler_requests_total{code="503"} 0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Great! now we know our new code works, next stop, create the bundle for the current version (<code>0.0.2</code>).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-new-bundle"><a class="anchor" href="#create-new-bundle"></a>Create a new operator bundle and it’s corresponding image for version <code>0.0.2</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This should be easy… just run the following to regenerate the bundle for the new version… wait, wait, I forgot something crucial here… Version <code>0.0.2</code> replaces <code>0.0.1</code> this should be specified somewhere… specifically in the base CSV. <strong>Let’s do this first!</strong></p>
+</div>
+<div class="paragraph">
+<p>Open file <code>./config/manifests/bases/minerva-operator.clusterserviceversion.yaml</code>, and add</p>
+</div>
+<div class="paragraph">
+<p><code>replaces: minerva-operator.v0.0.1</code></p>
+</div>
+<div class="paragraph">
+<p>right underneath</p>
+</div>
+<div class="paragraph">
+<p><code>version: 0.0.0</code></p>
+</div>
+<div class="paragraph">
+<p><strong>pay attention to indentation</strong>. The end result should look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">...
+spec:
+  ...
+  provider:
+    name: Atarazana Inc.
+    url: https://es.wikipedia.org/wiki/Astillero_naval
+  version: 0.0.0
+  replaces: minerva-operator.v0.0.1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can run:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make bundle</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check that next command returns <code>minerva-operator.v0.0.1</code></p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">grep replaces ./bundle/manifests/minerva-operator.clusterserviceversion.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also that this returns <code>name: minerva-operator.v0.0.2</code></p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">grep "name: minerva-operator.v0.0.2" ./bundle/manifests/minerva-operator.clusterserviceversion.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Well now we have to build and push the bundle image:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make bundle-build
+make bundle-push</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-and-push-new-bundle-index"><a class="anchor" href="#create-and-push-new-bundle-index"></a>Create and push the new Bundle Index (<code>0.0.2</code>)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As we advanced before we use <code>FROM_VERSION</code> so that we can understand of we have to create a new Index from scratch or start from a previous bundle index to create the new one. Because <code>FROM_VERSION</code> is defined the makefile target will create index <code>0.0.2</code> based on (from) <code>0.0.1</code></p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make index-build</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see an output similar to this:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">echo "FROM_VERSION 0.0.1"
+FROM_VERSION 0.0.1
+opm -u docker index add --bundles quay.io/{reg_username}/minerva-operator-bundle:v0.0.2 --from-index quay.io/{reg_username}/minerva-operator-index:v0.0.1 --tag quay.io/{reg_username}/minerva-operator-index:v0.0.2
+...
+INFO[0004] Generating dockerfile                         bundles="[quay.io/{reg_username}/minerva-operator-bundle:v0.0.2]"
+INFO[0004] writing dockerfile: index.Dockerfile895643308  bundles="[quay.io/{reg_username}/minerva-operator-bundle:v0.0.2]"
+INFO[0004] running docker build                          bundles="[quay.io/{reg_username}/minerva-operator-bundle:v0.0.2]"
+INFO[0004] [docker build -f index.Dockerfile895643308 -t quay.io/{reg_username}/minerva-operator-index:v0.0.2 .]  bundles="[quay.io/{reg_username}/minerva-operator-bundle:v0.0.2]"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let’s push our new index:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make index-push</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="update-catalog-source"><a class="anchor" href="#update-catalog-source"></a>Update the CatalogSource to point to the new Bundle Index</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let’s do some cleaning before we test our new bundle index.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make undeploy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let’s check if the operator is available to be installed.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl operator list-available ${OPERATOR_NAME}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Pay attention, <code>LATEST CSV</code> is the previous version.</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                 CATALOG              CHANNEL  LATEST CSV                  AGE
+minerva-operator  Atarazana Operators  alpha    minerva-operator.v0.0.1  63s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let’s install the operator in our test namespace.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl operator install ${OPERATOR_NAME} -n operator-tests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now let’s create an AppDefinition object.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f ./config/samples/minerva_v1_appdefinition.yaml -n operator-tests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s see if our operator is working. Remember is version <code>0.0.1</code>.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pod -n operator-tests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ok, as expected 2 pods because size is 2 and 1 container per pod because it’s version <code>0.0.1</code>.</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                                      READY   STATUS    RESTARTS   AGE
+appdefinition-sample-bf69d6cdf-7m2bd                         1/1     Running   0          23s
+appdefinition-sample-bf69d6cdf-rtcpn                         1/1     Running   0          22s
+minerva-operator-controller-manager-589d887cf7-6wrw6   2/2     Running   0          77s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now the moment of truth. Let’s update the <code>CatalogSource</code> to point to the new bundle index.</p>
+</div>
+<div class="listingblock console-intput">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl edit catalogsource/atarazana-catalog -n olm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit <code>spec&#8594;image</code> to point to version <code>0.0.2</code>: <code>&#8230;&#8203;-operator-index:v0.0.2</code>, as in the next excerpt.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Don&#8217;t forget to save your changes! <span class="keyseq"><kbd>Esc</kbd>+<kbd>:</kbd>+<kbd>wq</kbd></span>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  ...
+  name: atarazana-catalog
+  namespace: olm
+spec:
+  displayName: Atarazana Operators
+  image: quay.io/cvicens/minerva-operator-operator-index:v0.0.2
+  publisher: Atarazana Inc.
+  sourceType: grpc</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait 5 secs or so and list the operators and you’ll see that there’s a new version (CURRENT CSV) and the status is <code>UpgradePending</code>.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl operator list</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Pay attention to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>INSTALLED CSV</code> &#8658; <code>0.0.1</code></p>
+</li>
+<li>
+<p><code>CURRENT CSV</code> &#8658; <code>0.0.2</code></p>
+</li>
+<li>
+<p><code>STATUS</code> &#8658; <code>UpgradePending</code></p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">PACKAGE              SUBSCRIPTION         INSTALLED CSV               CURRENT CSV                 STATUS          AGE
+minerva-operator  minerva-operator  minerva-operator.v0.0.1  minerva-operator.v0.0.2  UpgradePending  4m43s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So no changes so far, we have to upgrade to actually upgrade the image of the operator and move to the next version.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl operator upgrade ${OPERATOR_NAME} -n operator-tests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the result is <code>upgraded</code>!</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">operator "minerva-operator" upgraded; installed csv is "minerva-operator.v0.0.2"</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_final_tests"><a class="anchor" href="#_final_tests"></a>Final tests</h3>
+<div class="paragraph">
+<p>Finally, let’s check the result.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pod -n operator-tests</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And yes… there it is the second container!</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                                      READY   STATUS    RESTARTS   AGE
+appdefinition-sample-6d88cb67b6-7r9fl                        2/2     Running   0          10s
+appdefinition-sample-6d88cb67b6-xxsgx                        2/2     Running   0          11s
+minerva-operator-controller-manager-75c9f846b8-pqlkv   2/2     Running   0          31s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You made it, full stop.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="final-thoughts"><a class="anchor" href="#final-thoughts"></a>Final thoughts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is just an example that tries to cover a lot of land… I think it should be enough to start enjoying the Operator Framework. There’s still a lot to learn!</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="06-deploying-your-operator-using-olm.html" class="query-params-link">Deploy your operator with the Operator Lifecycle Manager</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

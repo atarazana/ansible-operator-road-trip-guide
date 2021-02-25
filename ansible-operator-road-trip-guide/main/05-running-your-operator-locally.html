@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Running v0.0.1 locally :: Ansible Operator Road Trip Guide</title>
+    <link rel="canonical" href="https://atarazana.github.io/ansible-operator-road-trip-guide/ansible-operator-road-trip-guide/main/05-running-your-operator-locally.html">
+    <link rel="prev" href="04-deploying-your-operator-manually.html">
+    <link rel="next" href="06-deploying-your-operator-using-olm.html">
+    <meta name="generator" content="Antora 2.3.4">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img
+          src="../../_/img/header_logo.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://atarazana.github.io/ansible-operator-road-trip-guide">Ansible Operator Road Trip Guide</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+        <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-scholars.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-scholars.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="ansible-operator-road-trip-guide" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">Ansible Operator Road Trip</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="01-setup-tools.html">Setup Tools</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup-tools.html#resources">Resources</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="01-setup-tools.html#prerequisite">Prerequisites</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="02-setup-project.html">Setup Project</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#login-to-registry">Login to registry</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#define-envvars">Define environment variables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#create-project-folder">Create the operator project</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="02-setup-project.html#setup-python-venv">Setup a Python virtual environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html">Building your 1st operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#setup-environment">Set up the environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="04-deploying-your-operator-manually.html">Deploy your operator manually</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="05-running-your-operator-locally.html">Running your operator locally</a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="05-running-your-operator-locally.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">Deploy your operator with the Operator Lifecycle Manager</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="07-evolving-your-operator.html">Evolving your operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html">XYZ</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Ansible Operator Road Trip</span>
+    <span class="version">main</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Ansible Operator Road Trip</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">main</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Ansible Operator Road Trip</a></li>
+    <li><a href="05-running-your-operator-locally.html">Running your operator locally</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/atarazana/ansible-operator-road-trip-guide/edit/main/documentation/modules/ROOT/pages/05-running-your-operator-locally.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Running v0.0.1 locally</h1>
+<div class="paragraph">
+<p>Ok, so you have deployed your operator and it works properly, but imagine for a moment does not and you want to run it locally.</p>
+</div>
+<div class="paragraph">
+<p>Before anything let&#8217;s delete the <code>CR</code> to start clean.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f ./config/samples/minerva_v1_appdefinition.yaml -n ${PROJECT_NAME}</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">. ./settings.sh
+
+oc describe sa/default -n ${PROJECT_NAME}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let’s extract the token used by the <code>default</code> service account.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export SA_TOKEN=$(oc get secret -n ${PROJECT_NAME} $(oc get sa/default -o json -n ${PROJECT_NAME} | jq -r '.secrets[0].name') -o json | jq -r .data.token | base64 -D)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we can use that token to execute code as the service account does when the operator is deployed.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl --token=${SA_TOKEN} get pod -n ${PROJECT_NAME}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Before we actually run the role manually and locally let’s scale the operator to zero.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl --token=${SA_TOKEN} scale deploy/${OPERATOR_NAME}-controller-manager --replicas=0 -n ${PROJECT_NAME}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="title">A note regarding RBAC</div>
+<div class="paragraph">
+<p>As you have probably guessed your operator runs as a pod using a unique service account. Well, this account needs some permissions and those are granted through a <code>RoleBinding</code> to a <code>Role</code> definition which you can find here `./config/rbac/role.yaml'. The content should look as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+ name: manager-role
+rules:
+ ##
+ ## Base operator rules
+ ##
+ - apiGroups:
+     - ""
+   resources:
+     - secrets
+     - pods
+     - pods/exec
+     - pods/log
+   verbs:
+     - create
+     - delete
+     - get
+     - list
+     - patch
+     - update
+     - watch
+ - apiGroups:
+     - apps
+   resources:
+     - deployments
+     - daemonsets
+     - replicasets
+     - statefulsets
+   verbs:
+     - create
+     - delete
+     - get
+     - list
+     - patch
+     - update
+     - watch
+ ##
+ ## Rules for minerva.atarazana/v1, Kind: AppDefinition
+ ##
+ - apiGroups:
+     - minerva.atarazana
+   resources:
+     - appdefinitions
+     - appdefinitions/status
+     - appdefinitions/finalizers
+   verbs:
+     - create
+     - delete
+     - get
+     - list
+     - patch
+     - update
+     - watch
+# +kubebuilder:scaffold:rules</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s run the logic or our operator locally using ansible&#8230;&#8203;</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make install run</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now (from a second terminal) create a <code>CR</code> using the sample generated by the Operator SDK.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Load environment with <code>. ./settings.sh</code> as we did before.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f ./config/samples/minerva_v1_appdefinition.yaml -n ${PROJECT_NAME}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Have a look to the PODs and deployments.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pod -n ${PROJECT_NAME}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output should look like this.</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                READY   STATUS    RESTARTS   AGE
+appdefinition-sample-bf69d6cdf-8ngz5   1/1     Running   0          29s
+appdefinition-sample-bf69d6cdf-ln75m   1/1     Running   0          29s</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get deploy -n ${PROJECT_NAME}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected output:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+appdefinition-sample   2/2     2            2           46s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That means the operator logic works locally… using our local token, the
+one you’re using with kubectl. That’s cheating a bit ;-)</p>
+</div>
+<div class="paragraph">
+<p>Let’s do some cleaning, delete the appdefinition object.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f ./config/samples/minerva_v1_appdefinition.yaml -n ${PROJECT_NAME}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ok we&#8217;re done with the manual tests, <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>C</kbd></span> to stop the local process and run this to undeploy the operator.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">make undeploy</code></pre>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="04-deploying-your-operator-manually.html" class="query-params-link">Deploy your operator manually</a></span>
+  <span class="next"><a href="06-deploying-your-operator-using-olm.html" class="query-params-link">Deploy your operator with the Operator Lifecycle Manager</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
