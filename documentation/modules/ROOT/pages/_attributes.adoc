@@ -1,2 +1,27 @@
-:experimental:
+include::versions.adoc[]
+:experimental: true
 :source-highlighter: highlightjs
+
+:container_registry: quay.io
+
+:operator_type: ansible
+
+:app_name: minerva
+:app_name_cap: Minerva
+
+:operator_name: {app_name}-operator
+:operator_image: {operator_name}-image
+:operator_tags: {app_name},architecture,deployment
+:organization: atarazana
+:organization_cap: Atarazana
+:organization_display: {organization_cap} Inc.
+:organization_link: https://es.wikipedia.org/wiki/Astillero_naval
+:domain: {organization}.com
+:api_version: {app_name}.{domain}/v1
+:project_name: {operator_name}-system
+:reg_username_nope: %REG_USERNAME%
+
+:crd_name: AppDefinition
+:crd_name_lc: appdefinition
+
+:os_username: johndoe

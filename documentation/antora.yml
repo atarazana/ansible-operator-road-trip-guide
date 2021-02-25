@@ -1,5 +1,5 @@
-name: template-tutorial
-title: Template Tutorial
+name: ansible-operator-road-trip-guide
+title: Ansible Operator Road Trip
 version: master
 nav:
   - modules/ROOT/nav.adoc

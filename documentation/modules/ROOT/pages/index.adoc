@@ -1,20 +1,130 @@
-= Welcome to Template Tutorial
+include::_attributes.adoc[]
+= Overview
 :page-layout: home
 :!sectids:
 
-[.text-center.strong]
-== Publish Services to Kubernetes
+For years the way to go to get something installed in an organization was finding the person of reference and file a request: by email, by phone, via a procurement portal, you name it.
 
-A Kubernetes tutorial to show how you can deploy a Java service to a Kubernetes cluster as it was a child game.
+Of course this person had the knowledge and the means (inn general) to fulfill your request and get you what you wanted/needed. Sometimes we call this kind of person `operator` or `the one who knows`, but let's stick to the 1st more down-to-earth name.
+
+Well, in the kubernetes world an operator is the same, true, it's an entity not a person, but it has the knowledge and (hopefully) the resources to get you what you want. The knowledge will be (no wonder) in the shape of code running in a POD and resources, well, kubernetes is all about managing and orchestrating resources, isn't it?
+
+But you maybe wondering... code in a POD, that like saying nothing. True, this code is special it has to follow the link:https://kubernetes.io/docs/concepts/architecture/controller/#controller-pattern[controller pattern, window=_blank].
+
+[#controllers]
+== Controllers
+
+[quote]
+____
+A controller tracks at least one Kubernetes resource type. These objects have a spec field that represents the desired state. The controller(s) for that resource are responsible for making the current state come closer to that desired state.
+____
+
+So, imagine you want and operator capable of deploying a Kafka cluster, you would need:
+
+* a custom resource that has a spec section declaring the desired state
+* a controller watching this kind of resource and reacting to events like: creation, update, deletion, ...
+
+This custom resource should have a spec section declaring, for instance that you want 3 zoo-keeper instances and 3 cluster nodes with ephemeral storage. Find below a sample `Kafka` custom resource.
+
+NOTE: Custom resources in kubernetes have a formal definition link:https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/[*Custom Resource Definition*, window=_blank] which is in fact the way to extend the kubernetes native set of objects.
+
+.Sample Kafka Custom Resource
+[.console-output]
+[source,yaml,options="nowrap",subs="attributes+"]
+----
+apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  name: my-cluster
+spec:
+  kafka:
+    ...
+    version: 2.6.0
+    storage:
+      type: ephemeral
+    replicas: 3
+    listeners:
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+  zookeeper:
+    storage:
+      type: ephemeral
+    replicas: 3
+----
+
+Ok, you have a way to specifiy the desired state, now you need some code that is triggered everytime something happens to `Kafka` resources. So, all you have to do is building a controller watching this type of objects!
+
+Wait... this is not an easy task... which language would you use... which client library to import... samples?
+
+No worries, the link:https://operatorframework.io/[Operator Framework, window=_blank] got you covered and offers several SDKs (Go, Ansible and Helm) to build operators in a much easier way. Not only that, this project also provides with a centrl piece in charge of the lifecycle of operators, the link:https://github.com/operator-framework/operator-lifecycle-manager[Operator Lifecycle Manager, window=_blank].
+
+[NOTE]
+==========
+This tutorial will guide you through the process of building and evolving an operator using your favourite automation language, Ansible, using the link:https://sdk.operatorframework.io/[Operator SDK, window=_blank].
+==========
+
+[#tldr]
+== TL;DR
+
+You are going to *build version 0.0.1 of an operator that deploys a Memcached cluster* with a dynamic size, this includes learning how to build the image, the bundle and the bundle index. TODO xref here!!!
+
+Then we will show you how to *install the link:https://github.com/operator-framework/operator-lifecycle-manager[Operator Lifecycle Manager, window=_blank] and how to configure it to be able to install your very own operator*. 
+
+Finally you will *evolve your operator to version 0.0.2 and see how the installed operator upgrades itself* seamlessly.
+
+[#details]
+== Details
+
+The next steps are basically the ones in link:https://sdk.operatorframework.io/docs/building-operators/golang/quickstart/[this]
+guide. I just compiled the steps in that guide and simplified some things. I hope ;-)
+
 
 [.tiles.browse]
 == Browse modules
 
 [.tile]
-.xref:01-setup.adoc[Get Started]
-* xref:01-setup.adoc#minikube[Minikube]
+xref:01-setup.adoc[Get Started]
+//* xref:01-setup.adoc#minikube[Minikube]
 
 [.tile]
-.xref:02-deploy.adoc[Deploying]
-* xref:02-deploy.adoc#package[Package the Application]
-* xref:02-deploy.adoc#deploy[Deploy the Application]
+.xref:02-building-your-1st-operator.adoc[Building your 1st {operator_type} operator]
+* xref:02a-spring-boot-common.adoc#the-code[Common]
+** xref:02a-spring-boot-common.adoc#the-code[The code]
+** xref:02a-spring-boot-common.adoc#maven-profiles[Maven Profiles]
+** xref:02a-spring-boot-common.adoc#run-local[Running the code locally against H2]
+* xref:02b-spring-boot-deploy-postgresql.adoc[Using PostgreSQL as Database]
+*** xref:02b-spring-boot-deploy-postgresql.adoc#deploy-database[Deploying PostgreSQL Database]
+*** xref:02b-spring-boot-deploy-postgresql.adoc#deploy-code[Deploying the code]
+*** xref:02b-spring-boot-deploy-postgresql.adoc#run-local-telepresence[Extending the inner-loop with Telepresence]
+*** xref:02b-spring-boot-deploy-postgresql.adoc#binary-deploy[Binary deploy S2I]
+* xref:02c-spring-boot-deploy-oracle.adoc[Using Oracle as Database]
+*** xref:02c-spring-boot-deploy-oracle.adoc#deploy-database[Deploying Oracle RDBMS]
+*** xref:02c-spring-boot-deploy-oracle.adoc#deploy-code[Deploying the code]
+*** xref:02c-spring-boot-deploy-oracle.adoc#run-local-telepresence[Extending the inner-loop with Telepresence]
+*** xref:02c-spring-boot-deploy-oracle.adoc#binary-deploy[Binary deploy S2I]
+
+[.tile]
+.xref:03a-quarkus-common.adoc[Quarkus Inner-Loop Development]
+* xref:03a-quarkus-common.adoc#the-code[Common]
+** xref:03a-quarkus-common.adoc#the-code[The code]
+** xref:03a-quarkus-common.adoc#maven-profiles[Maven Profiles]
+** xref:03a-quarkus-common.adoc#run-local[Running the code locally against H2]
+* xref:03b-quarkus-deploy-postgresql.adoc[Using PostgreSQL as Database]
+*** xref:03b-quarkus-deploy-postgresql.adoc#deploy-database[Deploying PostgreSQL Database]
+*** xref:03b-quarkus-deploy-postgresql.adoc#deploy-code[Deploying the code]
+*** xref:03b-quarkus-deploy-postgresql.adoc#run-local-telepresence[Extending the inner-loop with Telepresence]
+*** xref:03b-quarkus-deploy-postgresql.adoc#binary-deploy[Binary deploy S2I]
+* xref:03c-quarkus-deploy-oracle.adoc[Using Oracle as Database]
+*** xref:03c-quarkus-deploy-oracle.adoc#deploy-database[Deploying Oracle RDBMS]
+*** xref:03c-quarkus-deploy-oracle.adoc#deploy-code[Deploying the code]
+*** xref:03c-quarkus-deploy-oracle.adoc#run-local-telepresence[Extending the inner-loop with Telepresence]
+*** xref:03c-quarkus-deploy-oracle.adoc#binary-deploy[Binary deploy S2I]
+
+== Part One: Create and Upgrade and Operator using https://github.com/operator-framework/operator-lifecycle-manager[OLM]
+
+…
+
+
+
