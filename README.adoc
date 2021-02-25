@@ -115,7 +115,7 @@ Here's the list of all query params used (they are all optional, but generated l
 
 Example:
 
-https://atarazana.github.io/ansible-operator-road-trip-guide/ansible-operator-road-trip-guide/index.html?CLUSTER_SUBDOMAIN=apps-crc.testing&USERNAME=developer&PASSWORD=developer
+https://atarazana.github.io/ansible-operator-road-trip-guide/ansible-operator-road-trip-guide/main/index.html?CLUSTER_SUBDOMAIN=apps-crc.testing&USERNAME=developer&PASSWORD=developer
 
 ## Contributing
 
