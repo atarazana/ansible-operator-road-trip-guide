@@ -10,17 +10,17 @@ content:
   sources:
     - url: git@github.com:atarazana/ansible-operator-road-trip-guide.git
       tags: []
-      branches: [master]
+      branches: [main]
       start_path: documentation
 
 asciidoc:
   attributes:
-    release-version: master
+    release-version: main
     page-pagination: true
     #title: Ansible Operator Road Trip Guide
     git_base: https://github.com/atarazana 
     git_uri: ansible-operator-road-trip-guide
-    git_ref: master
+    git_ref: main
   extensions:
     - ./lib/tab-block.js
     - ./lib/remote-include-processor.js
