@@ -77,7 +77,7 @@ Finally you will *evolve your operator to version 0.0.2 and see how the installe
 [#details]
 == Details
 
-The next steps are basically the ones in link:https://sdk.operatorframework.io/docs/building-operators/golang/quickstart/[this]
+The next steps are basically the ones in link:https://sdk.operatorframework.io/docs/building-operators/ansible/tutorial/[this]
 guide. I just compiled the steps in that guide and simplified some things. I hope ;-)
 
 

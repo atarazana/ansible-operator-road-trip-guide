@@ -2,92 +2,86 @@
 :page-layout: home
 :!sectids:
 
-Not that far away we were used to develop monolithic multitier applications where the main theme was:
+= Overview
+:page-layout: home
+:!sectids:
 
- [UI <-> JavaEE <-> Database]
- 
-This has changed ever since we started to embrace Micro Services Architectures and specially with the advent of Kubernetes
+For years the way to go to get something installed in an organization was finding the person of reference and file a request: by email, by phone, via a procurement portal, you name it.
+
+Of course this person had the knowledge and the means (inn general) to fulfill your request and get you what you wanted/needed. Sometimes we call this kind of person `operator` or `the one who knows`, but let's stick to the 1st more down-to-earth name.
+
+Well, in the kubernetes world an operator is the same, true, it's an entity not a person, but it has the knowledge and (hopefully) the resources to get you what you want. The knowledge will be (no wonder) in the shape of code running in a POD and resources, well, kubernetes is all about managing and orchestrating resources, isn't it?
+
+But you maybe wondering... code in a POD, that like saying nothing. True, this code is special it has to follow the link:https://kubernetes.io/docs/concepts/architecture/controller/#controller-pattern[controller pattern, window=_blank].
+
+[#controllers]
+== Controllers
 
 [quote]
 ____
-"We have started to replace monoliths by sets of container-based microservices running in a +
-Kubernetes cluster"
+A controller tracks at least one Kubernetes resource type. These objects have a spec field that represents the desired state. The controller(s) for that resource are responsible for making the current state come closer to that desired state.
 ____
 
-In general we all aggree these distributed architectures have lots of benefits but also pose some challenges. Among these challanges we'd like to *highlight here the problems a developer has to face when developing kubernetes native applications*.
+So, imagine you want and operator capable of deploying a Kafka cluster, you would need:
 
-The truth is that, even though you will evetually run your code inside a kubernetes cluster, you still develop (in general) locally where you have your IDE, compilers, etc. There are several ways to explain the development cycle, here you are an informal definition. 
+* a custom resource that has a spec section declaring the desired state
+* a controller watching this kind of resource and reacting to events like: creation, update, deletion, ...
 
-[quote]
-____
-There are *two loops*, *one closer* to the developer *inner-loop*; *where you code, test, debug iteratively* and *one further away* the *outer-loop*; *where your code runs inside a container image you have to build, push and deploy* and... that take a lot longer.
-____
+This custom resource should have a spec section declaring, for instance that you want 3 zoo-keeper instances and 3 cluster nodes with ephemeral storage. Find below a sample `Kafka` custom resource.
 
-.Inner vs Outer "one more debug session nightmare"
-image::documentation/modules/ROOT/assets/images/inner-vs-outer-loop.png[Inner vs Outer Loop]
+NOTE: Custom resources in kubernetes have a formal definition link:https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/[*Custom Resource Definition*, window=_blank] which is in fact the way to extend the kubernetes native set of objects.
 
-You may think... I can "test it all" locally, then just push my code and the rest is history. Something like this.
+.Sample Kafka Custom Resource
+[.console-output]
+[source,yaml,options="nowrap",subs="attributes+"]
+----
+apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  name: my-cluster
+spec:
+  kafka:
+    ...
+    version: 2.6.0
+    storage:
+      type: ephemeral
+    replicas: 3
+    listeners:
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+  zookeeper:
+    storage:
+      type: ephemeral
+    replicas: 3
+----
 
-.Kubernetes Native Development Loop
-image::documentation/modules/ROOT/assets/images/kubernetes-development-loop.png[Kubernetes Native Development Loop]
+Ok, you have a way to specifiy the desired state, now you need some code that is triggered everytime something happens to `Kafka` resources. So, all you have to do is building a controller watching this type of objects!
 
-Well if this is your case... then you may not need to continue BUT if you happen to need to connect to several services, databases, etc. then having "it-all" locally maybe it's not an option, if that is the case stay!
+Wait... this is not an easy task... which language would you use... which client library to import... samples?
 
-Well, the *goal* of this guide is simple *exploring different approaches to help you with the inner-loop of the kubernetes native development workflow*.
+No worries, the link:https://operatorframework.io/[Operator Framework, window=_blank] got you covered and offers several SDKs (Go, Ansible and Helm) to build operators in a much easier way. Not only that, this project also provides with a centrl piece in charge of the lifecycle of operators, the link:https://github.com/operator-framework/operator-lifecycle-manager[Operator Lifecycle Manager, window=_blank].
+
+[NOTE]
+==========
+This tutorial will guide you through the process of building and evolving an operator using your favourite automation language, Ansible, using the link:https://sdk.operatorframework.io/[Operator SDK, window=_blank].
+==========
 
 [#tldr]
 == TL;DR
 
-*This tutorial will guide you to extend your Java Inner Loop so that it literally overlaps with your kubernetes cluster*, something like this. You'll find how to do this for *Spring Boot* and *Quarkus*. We will provide you with sample code and configurations for *PostgreSQL* and *Oracle RDBMS*.
+You are going to *build version 0.0.1 of an operator that deploys a Memcached cluster* with a dynamic size, this includes learning how to build the image, the bundle and the bundle index. TODO xref here!!!
 
-[NOTE]
-====
-* This guide concentrates on Java but concepts and the approach involving Telepresence applies to any technology. 
-* The cases involving Oracle RDBMS explain how to deploy Oracle in an OpenShift cluster but once done they consider that database as external to the cluster.
-====
+Then we will show you how to *install the link:https://github.com/operator-framework/operator-lifecycle-manager[Operator Lifecycle Manager, window=_blank] and how to configure it to be able to install your very own operator*. 
 
-.Inner extended to the kubernetes cluster
-image::documentation/modules/ROOT/assets/images/inner-vs-outer-loop-extended.png[Inner extended to the kubernetes cluster]
-
-[#the-challenge]
-== The Challenge
-
-Given the distributed nature of nowdays applications *developers find themselves dealing with a pletora of services they need to integrate with* while developing. *So the challenge seems to be that those services need to be at reach and sometimes this is not easy*.
-
-Let's review some of the approches you can take in order to mitigate this problem.
-
-[#approaches]
-== Approaches To Mitigate The Problem
-
-Here are some approaches to reduce the problem:
-
-* Using link:https://docs.docker.com/compose/[Docker Compose, window=_blank] and deploy all the services locally
-* Using link:https://minikube.sigs.k8s.io/[minikube, window=_blank], link:https://kind.sigs.k8s.io/[kind, window=_blank], etc. and deploy all the services there
-* Mocking up all the services you interact with
-
-*All these approaches are valid and plausible but some times they're not the best way to go or just too complicated to maintain*. For instance some times you need access to several services in different namespaces and you have to get all those with you in your local cluster... other times some services are external and reachable only from the remote cluster... and maybe mocking-up code is not your thing (or don't have the skills or time to do it).
-
-This guide explores some alternatives to extend your local development environment (*inner-loop*) to the remote cluster for Java applications using two frameworks: Spring Boot and link:https://quarkus.io[Quarkus, window=_blank].
+Finally you will *evolve your operator to version 0.0.2 and see how the installed operator upgrades itself* seamlessly.
 
 [#details]
 == Details
 
-This tutorial provides you with a super-simple CRUD microservice (in two flavors: Spring Boot and link:https://quarkus.io[Quarkus, window=_blank]), *`FruitService`*, that implements the usual functions: create, update, delete, find all, etc. mapped to a table in a releational database.
-
-No need to code this time, the Java code is simple, it works and we have tested it against, H2, PostgreSQL and Oracle RDBMS.
-
-.So what will you do in this tutorial? 
-You will:
-
-* Deploy the code against PostgreSQL directly from the command line using the link:https://www.eclipse.org/jkube:[JKube] maven plugin
-* You will also learn how JKube leverages Source to Image (link:https://docs.openshift.com/container-platform/{oc-version}/builds/understanding-image-builds.html#builds-strategy-s2i-build_understanding-image-builds[S2I]) to speed up the process of building OCI images inside OpenShift.
-* You'll find out how to do the same for Quarkus but this time using the OpenShift plugin instead of JKube
-* We will show you how to use link:https://telepresence.io:[Telepresence] to speed up development iterations.
-* Finally you'll learn how to enable link:https://quarkus.io/guides/maven-tooling#remote-development-mode[Remote Development Mode] for your Quarkus project
-
-Optionally, although highly recommendable, you will do the same but this time against an Oracle database. You will learn how to use a Kubernetes `Service` of type `ExternalName` to point to the Oracle database as if it were not deployed in your cluster, hence external. 
-
-NOTE: No worries if you don't have an Oracle database at hand, we'll show you how you can have an Oracle database running in a container in your OpenShift cluster (for testing purposes and as long as you have an OTN developer account you can use to pull images from the Oracle Container Registry).
+The next steps are basically the ones in link:https://sdk.operatorframework.io/docs/building-operators/ansible/tutorial/[this]
+guide. I just compiled the steps in that guide and simplified some things. I hope ;-)
 
 ### Lab Parameters
 
