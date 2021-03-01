@@ -541,6 +541,7 @@ Note that the result is `upgraded`!
 operator "{app_name}-operator" upgraded; installed csv is "{app_name}-operator.v0.0.2"
 ----
 
+[#final-tests]
 === Final tests
 
 Finally, let’s check the result.

@@ -1,6 +1,9 @@
 include::_attributes.adoc[]
+# Annexes
 
-An operator creates/manages things in a Kubernetes cluster as defined in what we call a Custom Resource. Well the definition of that type of object is called Custom Resource Definition (or CRD for short). We could also call it API… kind of right? Well in this context when we say API we’re referring to the CRD.
+An operator creates/manages things in a Kubernetes cluster as defined in what we call a Custom Resource. Well the definition of that type of object is called Custom Resource Definition (or CRD for short). We could also call it API, kind of right? 
+
+NOTE: In this context when we say API we’re referring to the CRD.
 
 For instance, this CR of type Kafka creates a Kafka cluster named `my-cluster' where the storage is ephemeral and the number of replicas is 3.
 

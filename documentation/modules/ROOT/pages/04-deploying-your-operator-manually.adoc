@@ -51,7 +51,7 @@ make install
 
 Now it’s time to deploy our operator as you would with any other kubernetes `Deployment`.
 
-[#running-as-a-normal-deployment]
+[#running-as-a-deployment]
 == Running v0.0.1 as a normal deployment
 
 Let’s go a step further and run the operator as a pod. But wait, before we do that we need an image, right? No worries there’s a target for that in the makefile.
@@ -123,8 +123,8 @@ If everything is fine you should see our `{app_name}-operator-controller-manager
 {app_name}-operator-system   {app_name}-operator-controller-manager   1/1     1            1           6m8s
 ----
 
-[#create-the-1st-cr]
-== Create the 1st instance of our CR
+[#create-a-cr]
+== Create an instance of our CR
 
 We want to test our code, this means we have to create an object of the type expected by our operator `{crd_name}` in our case. We have deployed our operator in a given namespace, so, either we change context to that namespace or we create our `CR` directly in that namespace. We’ll do the latter:
 

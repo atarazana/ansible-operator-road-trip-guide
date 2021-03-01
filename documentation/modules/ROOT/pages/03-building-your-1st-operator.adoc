@@ -119,7 +119,8 @@ git add *
 git commit -a -m "init"
 ----
 
-== Let’s add some sugar to the Makefile
+[#enhance-your-makefile]
+== Enhance your Makefile
 
 Now we’re going to replace the Makefile with the next one. Open `./Makefile` and substitute the content with this.
 
@@ -206,8 +207,8 @@ metadata:
 
 <.> `Other` is just an example category, you can change it to something more suitable if you want
 
-[#updating-install-mode]
-=== Updating install mode
+[#updating-install-modes]
+=== Updating install modes
 
 If not already opened, please open file `./config/manifests/bases/{operator_name}.clusterserviceversion.yaml` and update the supported install modes as in the next example.
 

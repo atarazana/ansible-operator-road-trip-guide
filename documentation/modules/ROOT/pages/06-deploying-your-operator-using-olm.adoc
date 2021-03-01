@@ -296,7 +296,8 @@ CAUTION: Don’t forget to make the image public!
 
 Congratulations you have created your first bundle index, now you can create a CatalogSource. But before you do, you’d have to install OLM in your cluster (unless you’re using OpenShift 4.x, then OLM is already in place).
 
-== Installing OLM
+[#install-olm]
+== Install OLM
 
 Installing (and checking) OLM in a Kubernetes cluster should be a straight forward task. Let’s run first this command to check if OLM it’s already installed. Unless you have already installed OLM or your cluster is an OpenShift cluster you should get this error: `no existing installation found'.
 
@@ -385,6 +386,7 @@ operatorhubio-catalog                           olm          CatalogSource      
 
 Great we’re ready to create a CatalogSource that points to our bundle index.
 
+[#deploy-catalog-source]
 == Deploy a CatalogSource pointing to Bundle Index 0.0.1
 
 I have prepared a makefile target called `catalog-deploy` to do this.
@@ -650,8 +652,7 @@ automatically through the
 https://github.com/operator-framework/operator-lifecycle-manager[Operator
 Lifecycle Manager].
 
-[#branch-for-0.0.1]
-== Branching tagging version 0.0.1
+.Branching tagging version 0.0.1
 
 We’ve reached a milestone, let’s create a branch for it (I know, maybe a tag would be better… no problem if you decide to do it with a tag).
 
