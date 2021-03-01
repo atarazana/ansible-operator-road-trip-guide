@@ -224,7 +224,7 @@ Additionally, I have colored lanes for channels and bundle indexes. So, for inst
 * versions 0.0.2 AND 0.0.4 for beta channel
 * version 0.0.2 for stable channel
 
-image::olm-diagram-1.svg[OLM Registry]
+image::olm-diagram-1.png[OLM Registry]
 
 To make your operator available to OLM, you can generate an index image via `opm` with your bundle reference included. For example:
 
