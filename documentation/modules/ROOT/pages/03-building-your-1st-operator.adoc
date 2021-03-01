@@ -151,9 +151,101 @@ ____
 Take into account that this guide and it's assets were created for demonstration purposes, you should take it as a source of inspiration and to help you get started not as a _one-size-fit-all-kind-of_ template.
 ========
 
-== Building v0.0.1
+[#configuring-operator]
+== Configuring operator
+
+[#adding-permissions-on-configmaps]
+=== Adding permissions on `ConfigMaps`
+
+Before we can deploy our operator in a kubernetes cluster we have to adapt permissions so that the operator can handle `ConfigMaps`.
+
+NOTE: The problem would be seen only after deploying the operator using the Operator Lifecycle Manager and has to do with the leader election.
+
+Please open file `./config/rbac/role.yaml` and add `- configmaps` in the next excerpt.
+
+[source,yaml,subs="attributes+"]
+----
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+  ##
+  ## Base operator rules
+  ##
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - pods
+      - pods/exec
+      - pods/log
+      - configmaps #<.>
+...
+----
+
+<.> This is where you should add `- configmaps`
+
+[#updating-categories]
+=== Updating categories this operator belongs to
+
+Please open file `./config/manifests/bases/{operator_name}.clusterserviceversion.yaml` and add a `categories` annotation as follows.
+
+[source,yaml,subs="attributes+"]
+----
+...
+spec:
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+    categories: Other #<.>
+....
+----
+
+<.> `Other` is just an example category, you can change it to something more suitable if you want
+
+[#updating-install-mode]
+=== Updating install mode
+
+If not already opened, please open file `./config/manifests/bases/{operator_name}.clusterserviceversion.yaml` and update the supported install modes as in the next example.
+
+[quote, 'link:https://github.com/operator-framework[Operator Framework]', 'https://github.com/operator-framework/operator-lifecycle-manager/blob/master/doc/design/building-your-csv.md#operator-install[Operator Install]']
+______
+*InstallModes:*
+
+* *OwnNamespace*: the operator can be a member of an OperatorGroup that selects its own namespace
+* *SingleNamespace*: the operator can be a member of an OperatorGroup that selects one namespace
+* *MultiNamespace*: the operator can be a member of an OperatorGroup that selects more than one namespace
+* *AllNamespaces*: the operator can be a member of an OperatorGroup that selects all namespaces (target namespace set is the empty string "")
+______
+
+[source,yaml,subs="attributes+"]
+----
+...
+spec:
+  ...
+  installModes:
+  - supported: true        #<.>
+    type: OwnNamespace
+  - supported: true        #<.>
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+...
+----
+
+<.> We're going add support for `OwnNamespace`
+<.> We also add support for `SingleNamespace`
+
+[#coding-0.0.1]
+== Coding v0.0.1
 
 Well it’s time to look into the code and make it actually do something.
+
 As we have explained at the core of any operator lays a controller watching at Kubernetes events, in particular events related to objects of interest, for instance our CRDs and other object the operator owns (Pods, Deployments, etc.).
 
 [#adding-actual-code]
@@ -184,5 +276,3 @@ Let’s update the CRD, open `./config/crd/bases/minerva.atarazana_appdefinition
 ----
 include::example${crd_name_lc}-crd.yaml[]
 ----
-
-
