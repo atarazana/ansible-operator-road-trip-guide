@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Untitled :: Ansible Operator Road Trip Guide</title>
+    <title>Annexes :: Ansible Operator Road Trip Guide</title>
     <link rel="canonical" href="https://atarazana.github.io/ansible-operator-road-trip-guide/ansible-operator-road-trip-guide/main/08-annexes.html">
+    <link rel="prev" href="07-evolving-your-operator.html">
     <meta name="generator" content="Antora 2.3.4">
     <link rel="stylesheet" href="../../_/css/site.css">
 <link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
@@ -77,9 +78,6 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="02-setup-project.html#create-project-folder">Create the operator project</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="02-setup-project.html#setup-python-venv">Setup a Python virtual environment</a>
-  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
@@ -87,7 +85,46 @@
     <a class="nav-link" href="03-building-your-1st-operator.html">Building your 1st operator</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="03-building-your-1st-operator.html#setup-environment">Set up the environment</a>
+    <a class="nav-link" href="03-building-your-1st-operator.html#create-operator-scaffold">Create the operator scaffold</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#create-an-api">Create an API</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#setup-python-venv">Setup a Python venv</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#init-repo">Init the git repo</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#enhance-your-makefile">Enhance your Makefile</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html#configuring-operator">Configuring operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#adding-permissions-on-configmaps">Adding permissions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#updating-categories">Updating categories</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#updating-install-modes">Updating install modes</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html#coding-0.0.1">Coding v0.0.1</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#adding-actual-code">Adding Actual Code</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#defining-crd">Defining the CRD (API)</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -96,25 +133,43 @@
     <a class="nav-link" href="04-deploying-your-operator-manually.html">Deploy your operator manually</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="04-deploying-your-operator-manually.html">XYZ</a>
+    <a class="nav-link" href="04-deploying-your-operator-manually.html#running-as-a-deployment">Running as a deployment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html#checking-out-the-deployment">Checking out the deployment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html#create-a-cr">Create an instance of our CR</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="05-running-your-operator-locally.html">Running your operator locally</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="05-running-your-operator-locally.html">XYZ</a>
-  </li>
-</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="06-deploying-your-operator-using-olm.html">Deploy your operator with the Operator Lifecycle Manager</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">XYZ</a>
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#create-a-bunde-and-image">Create a bundle and its corresponding image</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#create-bundle-index">Creating the Bundle Index</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#install-olm">Install OLM</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#deploy-catalog-source">Deploy a CatalogSource pointing to Bundle Index 0.0.1</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#catalogsource-testing">CatalogSource Testing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#install-operator-with-kubectl-plugin">Install your operator with a kubectl plugin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#create-cr">Create an AppDefinition CR</a>
   </li>
 </ul>
   </li>
@@ -123,9 +178,33 @@
     <a class="nav-link" href="07-evolving-your-operator.html">Evolving your operator</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="07-evolving-your-operator.html">XYZ</a>
+    <a class="nav-link" href="07-evolving-your-operator.html#updating-the-code">Updating the code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#testing-the-new-code">Testing the new code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#running-as-normal-deployment">Running v0.0.2 as a normal deployment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#create-new-bundle">Create a new operator bundle and it’s corresponding image for version <code>0.0.2</code></a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#create-and-push-new-bundle-index">Create and push the new Bundle Index (<code>0.0.2</code>)</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="07-evolving-your-operator.html#update-catalog-source">Update the CatalogSource to point to the new Bundle Index</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="07-evolving-your-operator.html#final-tests">Final tests</a>
   </li>
 </ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="08-annexes.html">Annexes</a>
   </li>
 </ul>
   </li>
@@ -156,13 +235,30 @@
 <button class="nav-toggle"></button>
   <a href="index.html" class="home-link"></a>
 <nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Ansible Operator Road Trip</a></li>
+    <li><a href="08-annexes.html">Annexes</a></li>
+  </ul>
 </nav>
   <div class="edit-this-page"><a href="https://github.com/atarazana/ansible-operator-road-trip-guide/edit/main/documentation/modules/ROOT/pages/08-annexes.adoc">Edit this Page</a></div>
   </div>
   <div class="content">
 <article class="doc">
+<h1 class="page">Annexes</h1>
 <div class="paragraph">
-<p>An operator creates/manages things in a Kubernetes cluster as defined in what we call a Custom Resource. Well the definition of that type of object is called Custom Resource Definition (or CRD for short). We could also call it API… kind of right? Well in this context when we say API we’re referring to the CRD.</p>
+<p>An operator creates/manages things in a Kubernetes cluster as defined in what we call a Custom Resource. Well the definition of that type of object is called Custom Resource Definition (or CRD for short). We could also call it API, kind of right?</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+In this context when we say API we’re referring to the CRD.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>For instance, this CR of type Kafka creates a Kafka cluster named `my-cluster' where the storage is ephemeral and the number of replicas is 3.</p>
@@ -204,6 +300,9 @@ spec:
     replicas: 3</code></pre>
 </div>
 </div>
+<nav class="pagination">
+  <span class="prev"><a href="07-evolving-your-operator.html" class="query-params-link">Evolving your operator</a></span>
+</nav>
 </article>
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
   <div class="toc-menu"></div>

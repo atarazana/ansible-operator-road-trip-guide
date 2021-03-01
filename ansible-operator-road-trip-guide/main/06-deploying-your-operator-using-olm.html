@@ -79,9 +79,6 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="02-setup-project.html#create-project-folder">Create the operator project</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="02-setup-project.html#setup-python-venv">Setup a Python virtual environment</a>
-  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
@@ -89,7 +86,46 @@
     <a class="nav-link" href="03-building-your-1st-operator.html">Building your 1st operator</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="03-building-your-1st-operator.html#setup-environment">Set up the environment</a>
+    <a class="nav-link" href="03-building-your-1st-operator.html#create-operator-scaffold">Create the operator scaffold</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#create-an-api">Create an API</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#setup-python-venv">Setup a Python venv</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#init-repo">Init the git repo</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#enhance-your-makefile">Enhance your Makefile</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html#configuring-operator">Configuring operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#adding-permissions-on-configmaps">Adding permissions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#updating-categories">Updating categories</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#updating-install-modes">Updating install modes</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html#coding-0.0.1">Coding v0.0.1</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#adding-actual-code">Adding Actual Code</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#defining-crd">Defining the CRD (API)</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -98,25 +134,43 @@
     <a class="nav-link" href="04-deploying-your-operator-manually.html">Deploy your operator manually</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="04-deploying-your-operator-manually.html">XYZ</a>
+    <a class="nav-link" href="04-deploying-your-operator-manually.html#running-as-a-deployment">Running as a deployment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html#checking-out-the-deployment">Checking out the deployment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html#create-a-cr">Create an instance of our CR</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="05-running-your-operator-locally.html">Running your operator locally</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="05-running-your-operator-locally.html">XYZ</a>
-  </li>
-</ul>
   </li>
   <li class="nav-item is-current-page" data-depth="1">
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="06-deploying-your-operator-using-olm.html">Deploy your operator with the Operator Lifecycle Manager</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">XYZ</a>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#create-a-bunde-and-image">Create a bundle and its corresponding image</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#create-bundle-index">Creating the Bundle Index</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#install-olm">Install OLM</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#deploy-catalog-source">Deploy a CatalogSource pointing to Bundle Index 0.0.1</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#catalogsource-testing">CatalogSource Testing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#install-operator-with-kubectl-plugin">Install your operator with a kubectl plugin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#create-cr">Create an AppDefinition CR</a>
   </li>
 </ul>
   </li>
@@ -125,9 +179,33 @@
     <a class="nav-link" href="07-evolving-your-operator.html">Evolving your operator</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="07-evolving-your-operator.html">XYZ</a>
+    <a class="nav-link" href="07-evolving-your-operator.html#updating-the-code">Updating the code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#testing-the-new-code">Testing the new code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#running-as-normal-deployment">Running v0.0.2 as a normal deployment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#create-new-bundle">Create a new operator bundle and it’s corresponding image for version <code>0.0.2</code></a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#create-and-push-new-bundle-index">Create and push the new Bundle Index (<code>0.0.2</code>)</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="07-evolving-your-operator.html#update-catalog-source">Update the CatalogSource to point to the new Bundle Index</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="07-evolving-your-operator.html#final-tests">Final tests</a>
   </li>
 </ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="08-annexes.html">Annexes</a>
   </li>
 </ul>
   </li>
@@ -618,7 +696,7 @@ Don’t forget to make the image public!
 </div>
 </div>
 <div class="sect1">
-<h2 id="_installing_olm"><a class="anchor" href="#_installing_olm"></a>Installing OLM</h2>
+<h2 id="install-olm"><a class="anchor" href="#install-olm"></a>Install OLM</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Installing (and checking) OLM in a Kubernetes cluster should be a straight forward task. Let’s run first this command to check if OLM it’s already installed. Unless you have already installed OLM or your cluster is an OpenShift cluster you should get this error: `no existing installation found'.</p>
@@ -711,7 +789,7 @@ operatorhubio-catalog                           olm          CatalogSource      
 </div>
 </div>
 <div class="sect1">
-<h2 id="_deploy_a_catalogsource_pointing_to_bundle_index_0_0_1"><a class="anchor" href="#_deploy_a_catalogsource_pointing_to_bundle_index_0_0_1"></a>Deploy a CatalogSource pointing to Bundle Index 0.0.1</h2>
+<h2 id="deploy-catalog-source"><a class="anchor" href="#deploy-catalog-source"></a>Deploy a CatalogSource pointing to Bundle Index 0.0.1</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>I have prepared a makefile target called <code>catalog-deploy</code> to do this.</p>
@@ -1010,12 +1088,8 @@ automatically through the
 <a href="https://github.com/operator-framework/operator-lifecycle-manager">Operator
 Lifecycle Manager</a>.</p>
 </div>
-</div>
-</div>
-<div class="sect1 0 1">
-<h2 id="branch-for-0"><a class="anchor" href="#branch-for-0"></a>Branching tagging version 0.0.1</h2>
-<div class="sectionbody">
 <div class="paragraph">
+<div class="title">Branching tagging version 0.0.1</div>
 <p>We’ve reached a milestone, let’s create a branch for it (I know, maybe a tag would be better… no problem if you decide to do it with a tag).</p>
 </div>
 <div class="listingblock console-input">

@@ -78,9 +78,6 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="02-setup-project.html#create-project-folder">Create the operator project</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="02-setup-project.html#setup-python-venv">Setup a Python virtual environment</a>
-  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
@@ -88,7 +85,46 @@
     <a class="nav-link" href="03-building-your-1st-operator.html">Building your 1st operator</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="03-building-your-1st-operator.html#setup-environment">Set up the environment</a>
+    <a class="nav-link" href="03-building-your-1st-operator.html#create-operator-scaffold">Create the operator scaffold</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#create-an-api">Create an API</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#setup-python-venv">Setup a Python venv</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#init-repo">Init the git repo</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="03-building-your-1st-operator.html#enhance-your-makefile">Enhance your Makefile</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html#configuring-operator">Configuring operator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#adding-permissions-on-configmaps">Adding permissions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#updating-categories">Updating categories</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#updating-install-modes">Updating install modes</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="03-building-your-1st-operator.html#coding-0.0.1">Coding v0.0.1</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#adding-actual-code">Adding Actual Code</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="03-building-your-1st-operator.html#defining-crd">Defining the CRD (API)</a>
+  </li>
+</ul>
   </li>
 </ul>
   </li>
@@ -97,25 +133,43 @@
     <a class="nav-link" href="04-deploying-your-operator-manually.html">Deploy your operator manually</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="04-deploying-your-operator-manually.html">XYZ</a>
+    <a class="nav-link" href="04-deploying-your-operator-manually.html#running-as-a-deployment">Running as a deployment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html#checking-out-the-deployment">Checking out the deployment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="04-deploying-your-operator-manually.html#create-a-cr">Create an instance of our CR</a>
   </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
-    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="05-running-your-operator-locally.html">Running your operator locally</a>
-<ul class="nav-list">
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="05-running-your-operator-locally.html">XYZ</a>
-  </li>
-</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="06-deploying-your-operator-using-olm.html">Deploy your operator with the Operator Lifecycle Manager</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="06-deploying-your-operator-using-olm.html">XYZ</a>
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#create-a-bunde-and-image">Create a bundle and its corresponding image</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#create-bundle-index">Creating the Bundle Index</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#install-olm">Install OLM</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#deploy-catalog-source">Deploy a CatalogSource pointing to Bundle Index 0.0.1</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#catalogsource-testing">CatalogSource Testing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#install-operator-with-kubectl-plugin">Install your operator with a kubectl plugin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="06-deploying-your-operator-using-olm.html#create-cr">Create an AppDefinition CR</a>
   </li>
 </ul>
   </li>
@@ -124,9 +178,33 @@
     <a class="nav-link" href="07-evolving-your-operator.html">Evolving your operator</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="07-evolving-your-operator.html">XYZ</a>
+    <a class="nav-link" href="07-evolving-your-operator.html#updating-the-code">Updating the code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#testing-the-new-code">Testing the new code</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#running-as-normal-deployment">Running v0.0.2 as a normal deployment</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#create-new-bundle">Create a new operator bundle and it’s corresponding image for version <code>0.0.2</code></a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="07-evolving-your-operator.html#create-and-push-new-bundle-index">Create and push the new Bundle Index (<code>0.0.2</code>)</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="07-evolving-your-operator.html#update-catalog-source">Update the CatalogSource to point to the new Bundle Index</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="07-evolving-your-operator.html#final-tests">Final tests</a>
   </li>
 </ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="08-annexes.html">Annexes</a>
   </li>
 </ul>
   </li>
@@ -297,62 +375,17 @@ guide. I just compiled the steps in that guide and simplified some things. I hop
 <div class="sect1 tiles browse">
 <h2>Browse modules</h2>
 <div class="sectionbody">
-<div class="paragraph tile">
-<p><a href="#01-setup.adoc" class="page unresolved">Get Started</a></p>
-</div>
 <div class="ulist tile">
-<div class="title"><a href="#02-building-your-1st-operator.adoc" class="page unresolved">Building your 1st ansible operator</a></div>
 <ul>
 <li>
-<p><a href="#02a-spring-boot-common.adoc#the-code" class="page unresolved">Common</a></p>
+<p><a href="01-setup-tools.html" class="page">Setup Tools</a></p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#02a-spring-boot-common.adoc#the-code" class="page unresolved">The code</a></p>
+<p><a href="01-setup-tools.html#resources" class="page">Resources</a></p>
 </li>
 <li>
-<p><a href="#02a-spring-boot-common.adoc#maven-profiles" class="page unresolved">Maven Profiles</a></p>
-</li>
-<li>
-<p><a href="#02a-spring-boot-common.adoc#run-local" class="page unresolved">Running the code locally against H2</a></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><a href="#02b-spring-boot-deploy-postgresql.adoc" class="page unresolved">Using PostgreSQL as Database</a></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#02b-spring-boot-deploy-postgresql.adoc#deploy-database" class="page unresolved">Deploying PostgreSQL Database</a></p>
-</li>
-<li>
-<p><a href="#02b-spring-boot-deploy-postgresql.adoc#deploy-code" class="page unresolved">Deploying the code</a></p>
-</li>
-<li>
-<p><a href="#02b-spring-boot-deploy-postgresql.adoc#run-local-telepresence" class="page unresolved">Extending the inner-loop with Telepresence</a></p>
-</li>
-<li>
-<p><a href="#02b-spring-boot-deploy-postgresql.adoc#binary-deploy" class="page unresolved">Binary deploy S2I</a></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><a href="#02c-spring-boot-deploy-oracle.adoc" class="page unresolved">Using Oracle as Database</a></p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#02c-spring-boot-deploy-oracle.adoc#deploy-database" class="page unresolved">Deploying Oracle RDBMS</a></p>
-</li>
-<li>
-<p><a href="#02c-spring-boot-deploy-oracle.adoc#deploy-code" class="page unresolved">Deploying the code</a></p>
-</li>
-<li>
-<p><a href="#02c-spring-boot-deploy-oracle.adoc#run-local-telepresence" class="page unresolved">Extending the inner-loop with Telepresence</a></p>
-</li>
-<li>
-<p><a href="#02c-spring-boot-deploy-oracle.adoc#binary-deploy" class="page unresolved">Binary deploy S2I</a></p>
+<p><a href="01-setup-tools.html#prerequisite" class="page">Prerequisites</a></p>
 </li>
 </ul>
 </div>
@@ -360,71 +393,181 @@ guide. I just compiled the steps in that guide and simplified some things. I hop
 </ul>
 </div>
 <div class="ulist tile">
-<div class="title"><a href="#03a-quarkus-common.adoc" class="page unresolved">Quarkus Inner-Loop Development</a></div>
 <ul>
 <li>
-<p><a href="#03a-quarkus-common.adoc#the-code" class="page unresolved">Common</a></p>
+<p><a href="02-setup-project.html" class="page">Setup Project</a></p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#03a-quarkus-common.adoc#the-code" class="page unresolved">The code</a></p>
+<p><a href="02-setup-project.html#login-to-registry" class="page">Login to registry</a></p>
 </li>
 <li>
-<p><a href="#03a-quarkus-common.adoc#maven-profiles" class="page unresolved">Maven Profiles</a></p>
+<p><a href="02-setup-project.html#define-envvars" class="page">Define environment variables</a></p>
 </li>
 <li>
-<p><a href="#03a-quarkus-common.adoc#run-local" class="page unresolved">Running the code locally against H2</a></p>
+<p><a href="02-setup-project.html#create-project-folder" class="page">Create the operator project</a></p>
 </li>
 </ul>
 </div>
 </li>
+</ul>
+</div>
+<div class="ulist tile">
+<ul>
 <li>
-<p><a href="#03b-quarkus-deploy-postgresql.adoc" class="page unresolved">Using PostgreSQL as Database</a></p>
+<p><a href="03-building-your-1st-operator.html" class="page">Building your 1st operator</a></p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#03b-quarkus-deploy-postgresql.adoc#deploy-database" class="page unresolved">Deploying PostgreSQL Database</a></p>
+<p><a href="03-building-your-1st-operator.html#create-operator-scaffold" class="page">Create the operator scaffold</a></p>
 </li>
 <li>
-<p><a href="#03b-quarkus-deploy-postgresql.adoc#deploy-code" class="page unresolved">Deploying the code</a></p>
+<p><a href="03-building-your-1st-operator.html#create-an-api" class="page">Create an API</a></p>
 </li>
 <li>
-<p><a href="#03b-quarkus-deploy-postgresql.adoc#run-local-telepresence" class="page unresolved">Extending the inner-loop with Telepresence</a></p>
+<p><a href="03-building-your-1st-operator.html#setup-python-venv" class="page">Setup a Python venv</a></p>
 </li>
 <li>
-<p><a href="#03b-quarkus-deploy-postgresql.adoc#binary-deploy" class="page unresolved">Binary deploy S2I</a></p>
-</li>
-</ul>
-</div>
+<p><a href="03-building-your-1st-operator.html#init-repo" class="page">Init the git repo</a></p>
 </li>
 <li>
-<p><a href="#03c-quarkus-deploy-oracle.adoc" class="page unresolved">Using Oracle as Database</a></p>
+<p><a href="03-building-your-1st-operator.html#enhance-your-makefile" class="page">Enhance your Makefile</a></p>
+</li>
+<li>
+<p><a href="03-building-your-1st-operator.html#configuring-operator" class="page">Configuring operator</a></p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#03c-quarkus-deploy-oracle.adoc#deploy-database" class="page unresolved">Deploying Oracle RDBMS</a></p>
+<p><a href="03-building-your-1st-operator.html#adding-permissions-on-configmaps" class="page">Adding permissions</a></p>
 </li>
 <li>
-<p><a href="#03c-quarkus-deploy-oracle.adoc#deploy-code" class="page unresolved">Deploying the code</a></p>
+<p><a href="03-building-your-1st-operator.html#updating-categories" class="page">Updating categories</a></p>
 </li>
 <li>
-<p><a href="#03c-quarkus-deploy-oracle.adoc#run-local-telepresence" class="page unresolved">Extending the inner-loop with Telepresence</a></p>
+<p><a href="03-building-your-1st-operator.html#updating-install-modes" class="page">Updating install modes</a></p>
+</li>
+</ul>
+</div>
 </li>
 <li>
-<p><a href="#03c-quarkus-deploy-oracle.adoc#binary-deploy" class="page unresolved">Binary deploy S2I</a></p>
+<p><a href="03-building-your-1st-operator.html#coding-0.0.1" class="page">Coding v0.0.1</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="03-building-your-1st-operator.html#adding-actual-code" class="page">Adding Actual Code</a></p>
+</li>
+<li>
+<p><a href="03-building-your-1st-operator.html#defining-crd" class="page">Defining the CRD (API)</a></p>
 </li>
 </ul>
 </div>
 </li>
 </ul>
 </div>
+</li>
+</ul>
 </div>
+<div class="ulist tile">
+<ul>
+<li>
+<p><a href="04-deploying-your-operator-manually.html" class="page">Deploy your operator manually</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="04-deploying-your-operator-manually.html#running-as-a-deployment" class="page">Running as a deployment</a></p>
+</li>
+<li>
+<p><a href="04-deploying-your-operator-manually.html#checking-out-the-deployment" class="page">Checking out the deployment</a></p>
+</li>
+<li>
+<p><a href="04-deploying-your-operator-manually.html#create-a-cr" class="page">Create an instance of our CR</a></p>
+</li>
+</ul>
 </div>
-<div class="sect1">
-<h2>Part One: Create and Upgrade and Operator using <a href="https://github.com/operator-framework/operator-lifecycle-manager">OLM</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>…</p>
+</li>
+</ul>
+</div>
+<div class="ulist tile">
+<ul>
+<li>
+<p><a href="05-running-your-operator-locally.html" class="page">Running your operator locally</a></p>
+</li>
+</ul>
+</div>
+<div class="ulist tile">
+<ul>
+<li>
+<p><a href="06-deploying-your-operator-using-olm.html" class="page">Deploy your operator with the Operator Lifecycle Manager</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="06-deploying-your-operator-using-olm.html#create-a-bunde-and-image" class="page">Create a bundle and its corresponding image</a></p>
+</li>
+<li>
+<p><a href="06-deploying-your-operator-using-olm.html#create-bundle-index" class="page">Creating the Bundle Index</a></p>
+</li>
+<li>
+<p><a href="06-deploying-your-operator-using-olm.html#install-olm" class="page">Install OLM</a></p>
+</li>
+<li>
+<p><a href="06-deploying-your-operator-using-olm.html#deploy-catalog-source" class="page">Deploy a CatalogSource pointing to Bundle Index 0.0.1</a></p>
+</li>
+<li>
+<p><a href="06-deploying-your-operator-using-olm.html#catalogsource-testing" class="page">CatalogSource Testing</a></p>
+</li>
+<li>
+<p><a href="06-deploying-your-operator-using-olm.html#install-operator-with-kubectl-plugin" class="page">Install your operator with a kubectl plugin</a></p>
+</li>
+<li>
+<p><a href="06-deploying-your-operator-using-olm.html#create-cr" class="page">Create an AppDefinition CR</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist tile">
+<ul>
+<li>
+<p><a href="07-evolving-your-operator.html" class="page">Evolving your operator</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="07-evolving-your-operator.html#updating-the-code" class="page">Updating the code</a></p>
+</li>
+<li>
+<p><a href="07-evolving-your-operator.html#testing-the-new-code" class="page">Testing the new code</a></p>
+</li>
+<li>
+<p><a href="07-evolving-your-operator.html#running-as-normal-deployment" class="page">Running v0.0.2 as a normal deployment</a></p>
+</li>
+<li>
+<p><a href="07-evolving-your-operator.html#create-new-bundle" class="page">Create a new operator bundle and it’s corresponding image for version <code>0.0.2</code></a></p>
+</li>
+<li>
+<p><a href="07-evolving-your-operator.html#create-and-push-new-bundle-index" class="page">Create and push the new Bundle Index (<code>0.0.2</code>)</a></p>
+</li>
+<li>
+<p><a href="07-evolving-your-operator.html#update-catalog-source" class="page">Update the CatalogSource to point to the new Bundle Index</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="07-evolving-your-operator.html#final-tests" class="page">Final tests</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist tile">
+<ul>
+<li>
+<p><a href="08-annexes.html" class="page">Annexes</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
