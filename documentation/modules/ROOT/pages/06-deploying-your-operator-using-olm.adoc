@@ -88,9 +88,9 @@ INFO[0000] All validation tests have completed successfully
 Now have a look to the generated folder `./bundle`.
 
 Also have a look to
-`./config/manifests/base/{app_name}.clusterserviceversion.yaml` this file is a template and is where you should make changes to `name`, `description`, `icon`, etc.
+`./config/manifests/base/{operator_name}.clusterserviceversion.yaml` this file is a template and is where you should make changes to `name`, `description`, `icon`, etc.
 
-For instance edit the file `{app_name}.clusterserviceversion.yaml` and change `spec.description` with the proposed text.
+For instance edit the file `{operator_name}.clusterserviceversion.yaml` and change `spec.description` with the proposed text.
 
 
 CAUTION: Indentation is critical here… don’t tell me I didn’t tell you ;-)
